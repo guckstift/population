@@ -1,32 +1,38 @@
-function MapChunk(x, y)
+function MapChunk(map, x, y)
 {
+	this.map = map;
 	this.x = x;
 	this.y = y;
 	
-	this.mapCoords = new Buffer("short").resize(this.numVerts * 2);
-	this.indices = new Buffer("ushort", true).resize(this.numIndices);
-	this.heights = new Buffer("ubyte").resize(this.numVerts);
-	this.normals = new Buffer("float").resize(this.numVerts * 3);
-	this.terra = new Buffer("ubyte").resize(this.numVerts);
+	this.mapCoords = new Buffer("short").resize(map.numVerts * 2);
+	this.indices = new Buffer("ushort", true).resize(map.numIndices);
+	this.heights = new Buffer("ubyte").resize(map.numVerts);
+	this.normals = new Buffer("float").resize(map.numVerts * 3);
+	this.terra = new Buffer("ubyte").resize(map.numVerts);
 	
-	for(var y=0; y < this.numVertRows; y++) {
-		for(var x=0; x < this.numVertsPerRow; x++) {
+	//Math.seedrandom(y << 16 + x);
+	
+	for(var y=0; y < map.numVertRows; y++) {
+		for(var x=0; x < map.numVertsPerRow; x++) {
 			var i = this.linearCoord(x, y);
-			var ax = x + this.x * (this.numVertsPerRow - 1);
-			var ay = y + this.y * (this.numVertRows - 1);
+			var ax = x + this.x * (map.numVertsPerRow - 1);
+			var ay = y + this.y * (map.numVertRows - 1);
 			
 			this.mapCoords.set(i * 2 + 0, x);
 			this.mapCoords.set(i * 2 + 1, y);
+			
+			//Math.seedrandom(map.randAt(this.x, this.y, x, y));
+			this.heights.set(i, floor(map.randAt(this.x, this.y, x, y) * 2));
 			//this.heights.set(i, floor(random() * 2));
-			this.heights.set(i, floor(sin(ax + ay +ax * ay) * 1 + 1));
+			//this.heights.set(i, floor(sin(ax + ay + ax * ay) * 1 + 1));
 			//this.terra.set(i, floor(random() * 3));
 			//this.terra.set(i, floor(sin(ax + ay) * 1.5 + 1.5));
 			this.terra.set(i, 0);
 		}
 	}
 		
-	for(var y=0; y < this.numVertRows; y++) {
-		for(var x=0; x < this.numVertsPerRow; x++) {
+	for(var y=0; y < map.numVertRows; y++) {
+		for(var x=0; x < map.numVertsPerRow; x++) {
 			var i = this.linearCoord(x, y);
 			var vm = this.getVertex(x, y);
 			var vs = [
@@ -59,25 +65,25 @@ function MapChunk(x, y)
 		}
 	}
 	
-	for(var y=0, i=0; y < this.numTriaRows; y++) {
+	for(var y=0, i=0; y < map.numTriaRows; y++) {
 		var evenRow = y % 2 === 0;
 		var oddRow = !evenRow;
 		
-		for(var x=0; x < this.numTriasPerRow; x++) {
+		for(var x=0; x < map.numTriasPerRow; x++) {
 			var isDownPointing = evenRow && x % 2 == 0 || oddRow && x % 2 == 1;
 			var isUpPointing = !isDownPointing;
 			
-			this.indices.set(i++, (y + isUpPointing) * this.numVertsPerRow + floor(x/2));
+			this.indices.set(i++, (y + isUpPointing) * map.numVertsPerRow + floor(x/2));
 			
 			if(x == 0 && y > 0) {
 				this.indices.set(i++, this.indices.data[i-2]);
 			}
 		}
 		
-		this.indices.set(i++, (y + 1 + oddRow) * this.numVertsPerRow - 1);
-		this.indices.set(i++, (y + 1 + evenRow) * this.numVertsPerRow - 1);
+		this.indices.set(i++, (y + 1 + oddRow) * map.numVertsPerRow - 1);
+		this.indices.set(i++, (y + 1 + evenRow) * map.numVertsPerRow - 1);
 		
-		if(y < this.numTriaRows - 1) {
+		if(y < map.numTriaRows - 1) {
 			this.indices.set(i++, this.indices.data[i-2]);
 		}
 	}
@@ -100,11 +106,12 @@ function MapChunk(x, y)
 		shader.setAttribute("aNormal", this.normals);
 		shader.setAttribute("aTerra", this.terra);
 		
+		shader.setUniform("uChunkSize", map.size);
 		shader.setUniform("uChunkCoord", [this.x, this.y]);
 		shader.setUniform("uScreenSize", [display.width, display.height]);
 		shader.setUniform("uZoom", camera.zoom);
 		shader.setUniform("uCameraPos", camera.pos);
-		shader.setUniform("uSun", this.sun);
+		shader.setUniform("uSun", map.sun);
 		
 		shader.resetTextures();
 		shader.setTexture("uTex", loader.textures.terrain);
@@ -122,7 +129,7 @@ function MapChunk(x, y)
 		h = sqrt(3/4)
 		h = sqrt(3) / sqrt(4)
 		h = sqrt(3) / 2
-	*/
+	* /
 	this.triaHeight = sqrt(3.0) / 2.0;
 
 	/*
@@ -133,7 +140,7 @@ function MapChunk(x, y)
 		a = acos(h_o / h_i)
 		a = acos(½ / (sqrt(3) / 2)) 
 		a = acos(1 / sqrt(3))
-	*/
+	* /
 	this.viewAngle = acos(1.0 / sqrt(3.0));
 	
 	this.sun = [0, 0, -1];
@@ -148,12 +155,16 @@ function MapChunk(x, y)
 	this.numTriaRows = this.size * 2;
 	this.numTrias = this.numTriaRows * this.numTriasPerRow;
 	this.numIndices = (this.numTriasPerRow + 2 + 2) * this.numTriaRows - 2;
+	
+	*/
 
 	this.linearCoord = function(x, y)
 	{
-		x = clamp(0, this.numVertsPerRow - 1, x);
-		y = clamp(0, this.numVertRows - 1, y);
-		return y * this.numVertsPerRow + x;
+		var map = this.map;
+		
+		x = clamp(0, map.numVertsPerRow - 1, x);
+		y = clamp(0, map.numVertRows - 1, y);
+		return y * map.numVertsPerRow + x;
 	};
 
 	this.getVertex = function(x, y)
@@ -185,13 +196,13 @@ function MapChunk(x, y)
 	this.mapToWorld = function(mapCoord, height)
 	{
 		var worldPos;
+		var map = this.map;
 	
 		worldPos = [mapCoord[0], mapCoord[1], height / 3];
 		worldPos[0] += 0.5 * (mapCoord[1] % 2);
-		worldPos[1] *= this.triaHeight;
+		worldPos[1] *= map.triaHeight;
 	
 		return worldPos;
 	};
-
 
 }).call(MapChunk.prototype);

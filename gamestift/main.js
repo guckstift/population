@@ -8,14 +8,18 @@ function main()
 function onLoaderLoad()
 {
 	loader
-		.script("gamestift/math.js")
-		.script("gamestift/display.js")
-		.script("gamestift/buffer.js")
-		.script("gamestift/shader.js")
-		.script("gamestift/texture.js")
+		.script("gamestift/libs/seedrandom.min.js")
 		.error(onGamestiftError)
-		.ready(onGamestiftLoad)
-	;
+		.ready(function() {
+			loader
+				.script("gamestift/math.js")
+				.script("gamestift/display.js")
+				.script("gamestift/label.js")
+				.script("gamestift/buffer.js")
+				.script("gamestift/shader.js")
+				.script("gamestift/texture.js")
+				.ready(onGamestiftLoad);
+		});
 }
 
 function onGamestiftError(url)

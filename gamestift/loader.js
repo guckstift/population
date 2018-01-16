@@ -68,8 +68,9 @@ loader = {
 			callback();
 
 			if(this.itemsToLoad === 0) {
-				this.waitCallback();
+				var cb = this.waitCallback;
 				this.waitCallback = noop;
+				cb.call(this);
 			}
 		}
 	},
@@ -102,8 +103,9 @@ loader = {
 				callback();
 	
 				if(this.itemsToLoad === 0) {
-					this.waitCallback();
+					var cb = this.waitCallback;
 					this.waitCallback = noop;
+					cb.call(this);
 				}
 			}
 			else {
@@ -160,8 +162,9 @@ loader = {
 			callback();
 
 			if(this.itemsToLoad === 0) {
-				this.waitCallback();
+				var cb = this.waitCallback;
 				this.waitCallback = noop;
+				cb.call(this);
 			}
 		}
 	},

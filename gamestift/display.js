@@ -5,6 +5,7 @@ function Display()
 	this.onRender = noop;
 	this.onResize = noop;
 	
+	this.container = newElm("div");
 	this.canvas = newElm("canvas");
 	this.gl = this.canvas.getContext("webgl", { antialias: false });
 	this.glia = this.gl.getExtension("ANGLE_instanced_arrays");
@@ -16,6 +17,9 @@ function Display()
 	this.resize(800, 600);
 	this.setBgColor(0.0, 0.0, 0.0, 1.0);
 	
+	this.container.appendChild(this.canvas);
+	this.container.style.position = "relative";
+	
 	requestAnimationFrame(this.onFrame);
 }
 
@@ -25,7 +29,7 @@ Display.prototype = {
 	
 	attachTo: function(element)
 	{
-		element.appendChild(this.canvas);
+		element.appendChild(this.container);
 		
 		return this;
 	},
@@ -39,7 +43,7 @@ Display.prototype = {
 	
 	detach: function()
 	{
-		this.canvas.remove();
+		this.container.remove();
 		
 		return this;
 	},
@@ -50,6 +54,8 @@ Display.prototype = {
 		this.height = height;;
 		this.canvas.width = width;
 		this.canvas.height = height;
+		this.container.style.width = width + "px";
+		this.container.style.height = height + "px";
 	
 		this.gl.viewport(0, 0, width, height);
 		
@@ -58,6 +64,9 @@ Display.prototype = {
 
 	enableFullPageMode: function()
 	{
+		this.container.style.position = "absolute";
+		this.container.style.top = "0";
+		this.container.style.left = "0";
 		this.canvas.style.position = "absolute";
 		this.canvas.style.top = "0";
 		this.canvas.style.left = "0";
@@ -71,6 +80,9 @@ Display.prototype = {
 
 	disableFullPageMode: function()
 	{
+		this.container.style.position = "relative";
+		this.container.style.top = "";
+		this.container.style.left = "";
 		this.canvas.style.position = "";
 		this.canvas.style.top = "";
 		this.canvas.style.left = "";

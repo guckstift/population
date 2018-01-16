@@ -3,6 +3,7 @@ attribute float aHeight;
 attribute vec3 aNormal;
 attribute float aTerra;
 
+uniform float uChunkSize;
 uniform vec2 uChunkCoord;
 uniform vec2 uScreenSize;
 uniform float uZoom;
@@ -20,7 +21,7 @@ void main()
 {
 	vec3 worldPos, screenPos, clipPos;
 	
-	worldPos = mapToWorld(aMapCoord + uChunkCoord * vec2(32, 64), aHeight);
+	worldPos = mapToWorld(aMapCoord + uChunkCoord * vec2(uChunkSize, uChunkSize * 2.0), aHeight);
 	screenPos = worldToScreen(worldPos, uZoom, uCameraPos);
 	clipPos = screenToClip(screenPos, uScreenSize);
 	//clipPos = worldToSun(worldPos, uZoom, uCameraPos, uScreenSize);

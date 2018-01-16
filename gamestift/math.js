@@ -1,3 +1,5 @@
+Math.seedrandom(0)
+
 acos = Math.acos;
 cos = Math.cos;
 floor = Math.floor;
