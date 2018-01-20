@@ -1,5 +1,4 @@
-Math.seedrandom(0)
-
+abs = Math.abs;
 acos = Math.acos;
 cos = Math.cos;
 floor = Math.floor;
@@ -28,6 +27,28 @@ function clamp(minval, maxval, val)
 function randRange(a, b)
 {
 	return floor(random() * (b - a + 1) + a);
+}
+
+function noise1d(x)
+{
+	x *= 15485863; // mult with 1-millionth prime
+	x ^= x >> 2;   // r-shift with 1. prime
+	x ^= x << 5;   // l-shift with 3. prime
+	x ^= x >> 11;  // l-shift with 5. prime
+	x ^= x << 17;  // r-shift with 7. prime
+	return (x + 0x80000000) / 0xFFffFFff;
+}
+
+function noise2d(x, y)
+{
+	x *= 15485863; // mult with 1-millionth prime
+	y *= 285058399; // mult with 15485863. prime
+	h = x + y;
+	h ^= h >> 2;   // r-shift with 1. prime
+	h ^= h << 5;   // l-shift with 3. prime
+	h ^= h >> 11;  // l-shift with 5. prime
+	h ^= h << 17;  // r-shift with 7. prime
+	return (h + 0x80000000) / 0xFFffFFff;
 }
 
 function vec3add(a, b)

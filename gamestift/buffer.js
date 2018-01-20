@@ -99,5 +99,5 @@ Buffer.prototype = {
 
 Buffer.fromArray = function(type, array, indexBuf, display)
 {
-	return new Buffer(type, indexBuf, display).resize(array.length).set(array);
+	return new Buffer(type, indexBuf, display).resize(array.length).set(0, array);
 };

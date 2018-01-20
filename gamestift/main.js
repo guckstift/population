@@ -1,38 +1,36 @@
-main();
-
-function main()
+(function()
 {
+	var gameMainScript = document.currentScript.dataset.main || "src/main.js";
+	
 	loadScript("gamestift/loader.js", onLoaderLoad);
-}
 
-function onLoaderLoad()
-{
-	loader
-		.script("gamestift/libs/seedrandom.min.js")
-		.error(onGamestiftError)
-		.ready(function() {
-			loader
-				.script("gamestift/math.js")
-				.script("gamestift/display.js")
-				.script("gamestift/label.js")
-				.script("gamestift/buffer.js")
-				.script("gamestift/shader.js")
-				.script("gamestift/texture.js")
-				.ready(onGamestiftLoad);
-		});
-}
+	function onLoaderLoad()
+	{
+		loader
+			.script("gamestift/math.js")
+			.script("gamestift/perlin.js")
+			.script("gamestift/display.js")
+			.script("gamestift/label.js")
+			.script("gamestift/buffer.js")
+			.script("gamestift/shader.js")
+			.script("gamestift/texture.js")
+			.ready(onGamestiftLoad)
+			.error(onGamestiftError)
+	}
 
-function onGamestiftError(url)
-{
-	throw "Error: Couldn't find " + url;
-}
+	function onGamestiftError(url)
+	{
+		throw "Error: Couldn't find " + url;
+	}
 
-function onGamestiftLoad()
-{
-	loader
-		.script("src/main.js")
-	;
-}
+	function onGamestiftLoad()
+	{
+		loader
+			.script(gameMainScript)
+		;
+	}
+
+})();
 
 function noop()
 {

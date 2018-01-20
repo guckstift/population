@@ -196,6 +196,7 @@ Shader.prototype = {
 			gl.drawElements(gl.TRIANGLE_STRIP, this.indexBuf.len, this.indexBuf.gltype, 0);
 		}
 		else {
+			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		}
 	},
 
