@@ -21,6 +21,11 @@ const float triaHeight = sqrt(3.0) / 2.0;
 */
 const float viewAngle = acos(1.0 / sqrt(3.0));
 
+float round(float x)
+{
+	return floor(x + 0.5);
+}
+
 vec3 rotateX(vec3 v, float a)
 {
 	return vec3(
@@ -48,10 +53,11 @@ vec3 rotateZ(vec3 v, float a)
 	);
 }
 
-vec3 mapToWorld(vec2 mapCoord, float height)
+vec3 mapToWorld(vec2 mapCoord, vec2 chunkCoord, float chunkSize, float height)
 {
 	vec3 worldPos;
 	
+	mapCoord += chunkCoord * vec2(chunkSize, chunkSize * 2.0);
 	worldPos = vec3(mapCoord, height / 3.0);
 	worldPos.x += 0.5 * mod(mapCoord.y, 2.0);
 	worldPos.y *= triaHeight;

@@ -90,6 +90,9 @@ Shader.prototype = {
 		var gl = this.gl;
 		//var glia = this.glia;
 		var attrib = this.attributes[name];
+		
+		if(attrib === undefined) return this;
+		
 		var type = attrib.type;
 		var location = attrib.location;
 		
@@ -119,6 +122,9 @@ Shader.prototype = {
 		
 		var gl = this.gl;
 		var uniform = this.uniforms[name];
+		
+		if(uniform === undefined) return this;
+		
 		var type = uniform.type;
 		var location = uniform.location;
 		
@@ -143,6 +149,8 @@ Shader.prototype = {
 			throw "Error: Uniform type not supported.";
 		}
 		
+		gl.useProgram(this.prog);
+		
 		if(matrix) {
 			func.call(gl, location, false, value);
 		}
@@ -157,6 +165,9 @@ Shader.prototype = {
 	{
 		var gl = this.gl;
 		var uniform = this.uniforms[name];
+		
+		if(uniform === undefined) return this;
+		
 		var type = uniform.type;
 		var location = uniform.location;
 		
@@ -202,7 +213,7 @@ Shader.prototype = {
 
 };
 
-loader.shaders = {};
+cache.shaders = cache.shaders || {};
 
 loader.shader = function(shaderName, vertUrls, fragUrls, callback, display)
 {
@@ -217,7 +228,7 @@ loader.shader = function(shaderName, vertUrls, fragUrls, callback, display)
 	callback = callback || noop;
 	display = display || window.display;
 
-	if(this.shaders[shaderName]) {
+	if(cache.shaders[shaderName]) {
 		callback();
 		return this;
 	}
@@ -245,7 +256,7 @@ loader.shader = function(shaderName, vertUrls, fragUrls, callback, display)
 			vertSrc += this.combineTextFromUrls(vertUrls);
 			
 			if(vertSrc !== null && fragSrc !== null) {
-				this.shaders[shaderName] = new Shader(vertSrc, fragSrc, display);
+				cache.shaders[shaderName] = new Shader(vertSrc, fragSrc, display);
 				callback();
 			}
 		}
@@ -260,7 +271,7 @@ loader.shader = function(shaderName, vertUrls, fragUrls, callback, display)
 			fragSrc += this.combineTextFromUrls(fragUrls);
 			
 			if(vertSrc !== null && fragSrc !== null) {
-				this.shaders[shaderName] = new Shader(vertSrc, fragSrc, display);
+				cache.shaders[shaderName] = new Shader(vertSrc, fragSrc, display);
 				callback();
 			}
 		}
@@ -273,8 +284,7 @@ loader.combineTextFromUrls = function(urls)
 	
 	for(var i=0; i<urls.length; i++) {
 		var url = urls[i];
-		var name = this.urlToName(url);
-		var text = this.texts[name];
+		var text = this.getItem(url);
 		res += text;
 	}
 	

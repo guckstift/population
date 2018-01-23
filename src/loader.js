@@ -1,9 +1,8 @@
+cache = {
+};
+
 loader = {
 
-	images: {},
-	texts: {},
-	jsons: {},
-	scripts: {},
 	itemsToLoad: 0,
 	waitCallback: noop,
 	errorCallback: noop,
@@ -32,23 +31,66 @@ loader = {
 		this.errorCallback(url);
 	},
 	
-	urlToName: function(url)
+	parseUrl: function(url)
 	{
-		url = basename(url);
-		url = stripext(url);
-		url = url.replace(/[^a-zA-Z0-9]+/g, "_");
+		var path = url.split("/").filter(Boolean);
 		
-		return url;
+		for(var i=0; i<path.length; i++) {
+			path[i] = path[i].replace(/[^a-zA-Z0-9]+/g, "_");
+		}
+		
+		return path;
+	},
+	
+	setItem: function(url, item)
+	{
+		var path = this.parseUrl(url);
+		var dir = cache;
+		var base = path[path.length - 1];
+		
+		if(path.length > 1) {
+			for(var i=0; i<path.length-1; i++) {
+				var part = path[i];
+				
+				if(dir[part] === undefined) {
+					dir[part] = {}
+				}
+				
+				dir = dir[part]
+			}
+		}
+		
+		dir[base] = item;
+	},
+	
+	getItem: function(url)
+	{
+		var path = this.parseUrl(url);
+		var dir = cache;
+		var base = path[path.length - 1];
+		
+		if(path.length > 1) {
+			for(var i=0; i<path.length-1; i++) {
+				var part = path[i];
+				
+				if(dir[part] === undefined) {
+					return undefined;
+				}
+				
+				dir = dir[part]
+			}
+		}
+		
+		return dir[base];
 	},
 	
 	image: function(url, callback)
 	{
-		var name = this.urlToName(url);
 		var img = newElm("img");
 		
 		callback = callback || noop;
 		
-		if(this.images[name] !== undefined) {
+		if(this.getItem(url) !== undefined) {
 			callback();
 			return this;
 		}
@@ -63,7 +105,8 @@ loader = {
 		
 		function imgLoad()
 		{
-			this.images[name] = img;
+			this.setItem(url, img);
+			//this.images[name] = img;
 			this.itemsToLoad--;
 			callback();
 
@@ -77,12 +120,11 @@ loader = {
 	
 	text: function(url, callback)
 	{
-		var name = this.urlToName(url);
 		var xhr = new XMLHttpRequest();
 		
 		callback = callback || noop;
 		
-		if(this.texts[name] !== undefined) {
+		if(this.getItem(url) !== undefined) {
 			callback();
 			return this;
 		}
@@ -98,7 +140,8 @@ loader = {
 		function xhrLoad()
 		{
 			if(xhr.status === 200) {
-				this.texts[name] = xhr.responseText;
+				this.setItem(url, xhr.responseText);
+				//this.texts[name] = xhr.responseText;
 				this.itemsToLoad--;
 				callback();
 	
@@ -116,11 +159,9 @@ loader = {
 
 	json: function(url, callback)
 	{
-		var name = this.urlToName(url);
-		
 		callback = callback || noop;
 
-		if(this.jsons[name] !== undefined) {
+		if(this.getItem(url) !== undefined) {
 			callback();
 			return this;
 		}
@@ -131,20 +172,18 @@ loader = {
 		
 		function textLoad()
 		{
-			var text = this.texts[name];
+			var text = this.getItem(url);
 			var json = JSON.parse(text);
-			this.jsons[name] = json;
+			this.setItem(url, json);
 			callback();
 		}
 	},
 	
 	script: function(url, callback)
 	{
-		var name = this.urlToName(url);
-		
 		callback = callback || noop;
 
-		if(this.scripts[name] !== undefined) {
+		if(this.getItem(url) !== undefined) {
 			callback();
 			return this;
 		}
@@ -157,7 +196,7 @@ loader = {
 		
 		function scriptLoad()
 		{
-			this.scripts[name] = true;
+			this.setItem(url, true);
 			this.itemsToLoad--;
 			callback();
 

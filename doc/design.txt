@@ -1,0 +1,26 @@
+map
+===
+
+* the map is a triangular grid
+* the ground-level triangles are equiliteral in world space
+* the viewing angle is chosen such that ground-level triangles become isosceles right triangles in
+  view space
+
+	# world space triangle height
+	h_i = sqrt(3) / 2
+	
+	# view space triangle height
+	h_o = ½
+	
+	h_i * cos(a) = h_o
+	cos(a) = h_o / h_i
+	a = acos(h_o / h_i)
+	a = acos(½ / (sqrt(3) / 2))
+	
+	# viewing angle
+	a = acos(1 / sqrt(3))
+
+* each map vertex is assigned a discrete height value between 0 and 255 that is scaled with 1/3 in
+  world space
+* two adjacent vertices should not differ in height more than 1 unit
+* each map vertex is assigned a terrain type

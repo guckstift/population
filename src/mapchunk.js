@@ -5,15 +5,16 @@ function MapChunk(map, x, y)
 	this.y = y;
 	
 	this.heights = new Buffer("ubyte").resize(map.numVerts);
-	this.normals = new Buffer("float").resize(map.numVerts * 3);
 	this.terra = new Buffer("ubyte").resize(map.numVerts);
+	this.normals = new Buffer("float").resize(map.numVerts * 3);
 	
 	for(var y=0; y < map.numVertRows; y++) {
 		for(var x=0; x < map.numVertsPerRow; x++) {
 			var i = map.linearLocalCoord(x, y);
-			var coord = map.globalCoord(this.x, this.y, x, y)
-			this.heights.set(i, floor(noise2d(coord[0], coord[1]) * 2));
-			this.terra.set(i, floor(noise2d(coord[0], coord[1]) * 3));
+			var coord = map.globalCoord(this.x, this.y, x, y);
+			
+			this.heights.set(i, map.gen.height(coord[0], coord[1]));
+			this.terra.set(i, map.gen.terra(coord[0], coord[1]));
 		}
 	}
 }

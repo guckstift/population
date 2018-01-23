@@ -1,0 +1,18 @@
+todo
+====
+
+* picking
+* texture packing
+* path finding
+* chunk culling
+* script for source bundling
+* find a name for the game
+* make gh page
+* blender villager
+
+done
+====
+
+* merge gamestift into src dir
+* replace script loader by static script tag including
+* cache structure for loader

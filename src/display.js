@@ -19,6 +19,7 @@ function Display()
 	
 	this.container.appendChild(this.canvas);
 	this.container.style.position = "relative";
+	this.container.style.overflow = "hidden";
 	
 	requestAnimationFrame(this.onFrame);
 }

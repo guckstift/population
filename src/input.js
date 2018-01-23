@@ -27,6 +27,13 @@ Input.prototype = {
 		if(this.moving) {
 			camera.move(this.mouseRelX, this.mouseRelY);
 		}
+		
+		console.log(
+			(this.mouseX - display.width/2) / camera.zoom + camera.pos[0],
+			floor( (this.mouseY - display.height/2) / camera.zoom + camera.pos[1]),
+		);
+		
+		//label.setPos(this.mouseX, this.mouseY);
 	},
 	
 	onMouseDown: function(e)

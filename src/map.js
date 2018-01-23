@@ -9,6 +9,8 @@
 
 function Map()
 {
+	this.gen = mapgen;
+	
 	this.chunkDims = {
 		left: 0,
 		right: 0,
@@ -17,7 +19,7 @@ function Map()
 	};
 	
 	this.chunks = [];
-	this.shader = loader.shaders.map;
+	this.shader = cache.shaders.map;//coord;
 	this.mapCoords = new Buffer("short").resize(this.numVerts * 2);
 	this.indices = new Buffer("ushort", true).resize(this.numIndices);
 	
@@ -152,7 +154,7 @@ Map.prototype = {
 		this.shader.setUniform("uSun", this.sun);
 		
 		this.shader.resetTextures();
-		this.shader.setTexture("uTex", loader.textures.terrain);
+		this.shader.setTexture("uTex", cache.gfx.terrain_png);
 		
 		for(var y=0; y < this.chunks.length; y++) {
 			var chunkRow = this.chunks[y];

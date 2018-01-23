@@ -3,13 +3,11 @@ function Label(text, x, y, display)
 	display = display || window.display;
 	
 	this.display = display;
-	this.pos = [0, 0];
 	this.div = newElm("div");
 	this.div.style.position = "absolute";
-	this.div.style.top = x + "px";
-	this.div.style.left = y + "px";
 	this.display.container.appendChild(this.div);
 	
+	this.setPos(0, 0);
 	this.setText(text || "New Label");
 }
 
@@ -38,8 +36,10 @@ Label.prototype = {
 	
 	setPos: function(x, y)
 	{
-		this.div.style.top = x + "px";
-		this.div.style.left = y + "px";
+		this.pos = [x, y];
+		this.div.style.left = x + "px";
+		this.div.style.top = y + "px";
+		return this;
 	},
 	
 };

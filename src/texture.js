@@ -29,16 +29,12 @@ Texture.prototype = {
 
 };
 
-loader.textures = {};
-
 loader.texture = function(url, callback, display)
 {
-	var name = this.urlToName(url);
-	
 	callback = callback || noop;
 	display = display || window.display;
 
-	if(this.textures[name]) {
+	if(this.getItem(url) !== undefined) {
 		callback();
 	}
 
@@ -48,9 +44,9 @@ loader.texture = function(url, callback, display)
 	
 	function imageLoad()
 	{
-		var img = this.images[name];
+		var img = this.getItem(url);
 		var tex = new Texture(display).fromImage(img);
-		this.textures[name] = tex;
+		this.setItem(url, tex);
 		callback();
 	}
 };
