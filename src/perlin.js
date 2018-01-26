@@ -24,11 +24,9 @@ Layer.prototype = {
 		var ab = this.samples.get(flx,     fly + 1);
 		var bb = this.samples.get(flx + 1, fly + 1);
 		
-		return linearMix(
-			linearMix(aa, ba, p),
-			linearMix(ab, bb, p),
-			q,
-		) * this.amp;
+		var mixFunc = smoothMix;//linearMix;
+		
+		return this.amp * mixFunc(mixFunc(aa, ba, p), mixFunc(ab, bb, p), q);
 	},
 	
 	cellFactory: function(x, y)
@@ -40,11 +38,12 @@ Layer.prototype = {
 function Perlin()
 {
 	this.layers = [
-		new Layer(0, 32, 16),
-		new Layer(1, 16, 8),
-		new Layer(2, 8, 4),
-		new Layer(3, 4, 2),
-		new Layer(4, 2, 1),
+		new Layer(0, 1, 1),
+		new Layer(1, 2, 2),
+		//new Layer(2, 4, 4),
+		//new Layer(3, 8, 8),
+		//new Layer(4, 16, 16),
+		//new Layer(5, 32, 32),
 	];
 }
 

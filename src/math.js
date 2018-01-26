@@ -6,6 +6,7 @@ max = Math.max;
 min = Math.min;
 pi = Math.PI
 random = Math.random;
+round = Math.round;
 sin = Math.sin;
 sqrt = Math.sqrt;
 
@@ -32,30 +33,40 @@ function randRange(a, b)
 function noise1d(x, s)
 {
 	x *= 15485863; // mult with 1-millionth prime
-	x *= s || 1;
-	x ^= x >> 2;   // r-shift with 1. prime
-	x ^= x << 5;   // l-shift with 3. prime
-	x ^= x >> 11;  // r-shift with 5. prime
-	x ^= x << 17;  // l-shift with 7. prime
-	return (x + 0x80000000) / 0xFFffFFff;
+	var h = x;
+	h *= s || 1;
+	h ^= h >> 2;   // r-shift with 1. prime
+	h ^= h << 5;   // l-shift with 3. prime
+	h ^= h >> 11;  // r-shift with 5. prime
+	h ^= h << 17;  // l-shift with 7. prime
+	h ^= h >> 23;  // r-shift with 9. prime
+	h ^= h << 31;  // l-shift with 11. prime
+	return (h + 0x80000000) / 0xFFffFFff;
 }
 
 function noise2d(x, y, s)
 {
 	x *= 15485863; // mult with 1-millionth prime
 	y *= 285058399; // mult with 15485863. prime
-	h = x + y;
+	var h = x + y;
 	h *= s || 1;
 	h ^= h >> 2;   // r-shift with 1. prime
 	h ^= h << 5;   // l-shift with 3. prime
 	h ^= h >> 11;  // r-shift with 5. prime
 	h ^= h << 17;  // l-shift with 7. prime
+	h ^= h >> 23;  // r-shift with 9. prime
+	h ^= h << 31;  // l-shift with 11. prime
 	return (h + 0x80000000) / 0xFFffFFff;
 }
 
 function linearMix(x, y, a)
 {
 	return x * (1 - a) + y * a;
+}
+
+function smoothMix(x, y, a)
+{
+	return x + a * a * (3 - 2 * a) * (y - x);
 }
 
 function vec3add(a, b)

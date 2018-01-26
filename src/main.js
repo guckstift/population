@@ -16,18 +16,18 @@ function onGameLoad()
 {
 	display
 		.attachToBody()
-		.enableFullPageMode()
+		//.enableFullPageMode()
 		.setBgColor(1,1,1, 1)
 	
 	camera = new Camera();
-	input = new Input();
 	map = new Map();
+	input = new Input();
 	
 	camera.zoom = 128;
 	//camera.zoom = 2.546;
 	//camera.pos = [150, 120];
 	
-	var dim = 8;
+	var dim = 1;
 	
 	for(var x=0; x<=dim; x++) {
 		for(var y=0; y<=dim; y++) {
@@ -35,7 +35,14 @@ function onGameLoad()
 		}
 	}
 	
-	window.label = new Label("Hello World").setColor("red").setPos(16, 16);
+	labels = [
+		new Label("A").setColor("#f00").setPos(16, 16),
+		new Label("B").setColor("#0f0").setPos(16, 16),
+		new Label("C").setColor("#00f").setPos(16, 16),
+		new Label("D").setColor("#0ff").setPos(16, 16),
+		new Label("E").setColor("#f0f").setPos(16, 16),
+		new Label("F").setColor("#ff0").setPos(16, 16),
+	];
 	
 	display.onRender = onRender;
 }

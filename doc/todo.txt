@@ -2,17 +2,26 @@ todo
 ====
 
 * picking
-* texture packing
 * path finding
 * chunk culling
 * script for source bundling
 * find a name for the game
 * make gh page
 * blender villager
+* use Dyn2dArray for Map
+* optimize normal calculation
+* pack non-square texture atlases
+* load texture atlases
+* implement sprite batch
+* make real gradient perlin noise instead of value noise
+* try perlin noise with one single seeded source
+* put 3 dev screenshots in a README.md
 
 done
 ====
 
 * merge gamestift into src dir
-* replace script loader by static script tag including
+* replace script loader by static script tag inclusion
 * cache structure for loader
+* visualize noise as pixel map for debugging
+* texture packing

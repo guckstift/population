@@ -123,6 +123,22 @@ Map.prototype = {
 	
 		return worldPos;
 	},
+	
+	mapToScreen: function(x, y)
+	{
+		return [
+			display.width / 2 + (x + y % 2 * 0.5 - camera.pos[0]) * camera.zoom,
+			display.height / 2 + (y / 2 - camera.pos[1]) * camera.zoom,
+		];
+	},
+	
+	screenToWorldGround: function(x, y)
+	{
+		return [
+			1 * (camera.pos[0] + (x - display.width  / 2) / camera.zoom),
+			2 * (camera.pos[1] + (y - display.height / 2) / camera.zoom) * this.triaHeight,
+		];
+	},
 
 	getVertex: function(x, y)
 	{
@@ -207,7 +223,7 @@ Map.prototype = {
 			chunk.updateNormals();
 			
 			var f = this.getChunk(x - 1, y);
-			if(f) f.updateNormals();
+			//if(f) f.updateNormals();
 		}
 	},
 	

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Math</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=AM_CHTML"></script>
+	<style>
+		body {
+			background-color: #999;
+		}
+		
+		p {
+			text-align: center;
+		}
+	</style>
+<body>
+
+<h1>Math of the game</h1>
+
+<h2>The height of an equiliteral triangle</h2>
+
+<p>`a^2 + b^2 = c^2`</p>
+<p>`(1/2)^2 + h^2 = 1^2`</p>
+<p>`1/4 + h^2 = 1`</p>
+<p>`h^2 = 1 - 1/4`</p>
+<p>`h = sqrt(1 - 1/4)`</p>
+<p>`h = sqrt(3/4)`</p>
+<p>`h = sqrt(3) / sqrt(4)`</p>
+<p>`h = sqrt(3) / 2`</p>
+<p>`h ~~ 0.866`</p>
+
+<h2>The viewing angle</h2>
+
+<p>world space triangle height: `h_w = sqrt(3)/2`</p>
+<p>view space triangle height: `h_v = 1/2`</p>
+<p>`h_w * cos(alpha) = h_v`</p>
+<p>`cos(alpha) = h_v / h_w`</p>
+<p>`alpha = arccos(h_v / h_w)`</p>
+<p>`alpha = arccos((1/2) / (sqrt(3)/2))`</p>
+<p>`alpha = arccos(1/sqrt(3))`</p>
+<p>`alpha ~~ 54.74°`</p>
+
+</body>
+</html>

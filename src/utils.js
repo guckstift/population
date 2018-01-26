@@ -1,8 +1,8 @@
+log = console.log;
+
 function noop()
 {
 }
-
-log = console.log;
 
 function basename(path)
 {

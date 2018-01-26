@@ -1,11 +1,15 @@
-function Input()
+function Input(display)
 {
+	display = display || window.display;
+	
+	this.display = display;
+	this.elm = display.container;
 	this.moving = false;
 	
-	document.addEventListener("mousemove", this.onMouseMove.bind(this));
-	document.addEventListener("mousedown", this.onMouseDown.bind(this));
-	document.addEventListener("mouseup", this.onMouseUp.bind(this));
-	document.addEventListener("wheel", this.onMouseWheel.bind(this));
+	this.elm.addEventListener("mousemove", this.onMouseMove.bind(this));
+	this.elm.addEventListener("mousedown", this.onMouseDown.bind(this));
+	this.elm.addEventListener("mouseup", this.onMouseUp.bind(this));
+	this.elm.addEventListener("wheel", this.onMouseWheel.bind(this));
 }
 
 Input.prototype = {
@@ -14,8 +18,10 @@ Input.prototype = {
 	
 	updateMouse: function(e)
 	{
-		this.mouseX = e.clientX;
-		this.mouseY = e.clientY;
+		var rect = this.elm.getBoundingClientRect();
+		
+		this.mouseX = e.clientX - rect.left;
+		this.mouseY = e.clientY - rect.top;
 		this.mouseRelX = e.movementX;
 		this.mouseRelY = e.movementY;
 	},
@@ -28,12 +34,23 @@ Input.prototype = {
 			camera.move(this.mouseRelX, this.mouseRelY);
 		}
 		
-		console.log(
-			(this.mouseX - display.width/2) / camera.zoom + camera.pos[0],
-			floor( (this.mouseY - display.height/2) / camera.zoom + camera.pos[1]),
-		);
+		var y = ((this.mouseY - display.height / 2) / camera.zoom + camera.pos[1]) * 2;
+		var my = floor(y);
+		var x =  (this.mouseX - display.width  / 2) / camera.zoom + camera.pos[0] - my % 2 * 0.5;
+		var mx = round(x);
+		var before = x < mx;
+		var oddstart = my % 2 === 1;
 		
-		//label.setPos(this.mouseX, this.mouseY);
+		log(x, y);
+		log(mx, my);
+		log(before);
+		
+		for(var i=0; i<6; i++) {
+			var oddrow = (my + i) % 2 === 1;
+			var oddshift = oddstart ? !oddrow && !before * +1 : oddrow && before * -1;
+			var screenPos = map.mapToScreen(mx + oddshift, my + i);
+			labels[i].setPos(screenPos[0], screenPos[1]);
+		}
 	},
 	
 	onMouseDown: function(e)
