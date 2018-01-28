@@ -16,14 +16,14 @@ function onGameLoad()
 {
 	display
 		.attachToBody()
-		//.enableFullPageMode()
+		.enableFullPageMode()
 		.setBgColor(1,1,1, 1)
 	
 	camera = new Camera();
 	map = new Map();
 	input = new Input();
 	
-	camera.zoom = 128;
+	//camera.zoom = 128;
 	//camera.zoom = 2.546;
 	//camera.pos = [150, 120];
 	

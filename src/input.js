@@ -36,21 +36,44 @@ Input.prototype = {
 		
 		var y = ((this.mouseY - display.height / 2) / camera.zoom + camera.pos[1]) * 2;
 		var my = floor(y);
-		var x =  (this.mouseX - display.width  / 2) / camera.zoom + camera.pos[0] - my % 2 * 0.5;
+		var x =  (this.mouseX - display.width  / 2) / camera.zoom + camera.pos[0] - abs(my % 2) * 0.5;
 		var mx = round(x);
 		var before = x < mx;
-		var oddstart = my % 2 === 1;
+		var oddstart = abs(my % 2) === 1;
 		
-		log(x, y);
-		log(mx, my);
-		log(before);
+		/*log("x y", x, y);
+		log("mx my", mx, my);
+		log("before", before);
+		log("oddstart", oddstart);
+		*/
+		
+		var bestd = 1000000;
+		var bestx = 1000000;
+		var besty = 1000000;
 		
 		for(var i=0; i<6; i++) {
-			var oddrow = (my + i) % 2 === 1;
-			var oddshift = oddstart ? !oddrow && !before * +1 : oddrow && before * -1;
-			var screenPos = map.mapToScreen(mx + oddshift, my + i);
+			var oddrow = abs((my + i) % 2) === 1;
+			var oddshift = oddstart ? !oddrow * !before * +1 : oddrow * before * -1;
+			var scx = mx + oddshift;
+			var scy = my + i;
+			var screenPos = map.mapToScreen(scx, scy, map.getHeight(scx, scy));
+			var dist = (this.mouseX - screenPos[0]) ** 2 + (this.mouseY - screenPos[1]) ** 2
 			labels[i].setPos(screenPos[0], screenPos[1]);
+			
+			if(dist < bestd) {
+				bestd = dist;
+				bestx = scx;
+				besty = scy;
+			}
 		}
+		
+		var screenPos = map.mapToScreen(bestx, besty, map.getHeight(bestx, besty));
+		labels[0].setPos(screenPos[0], screenPos[1]);
+		labels[1].setPos(0, 0);
+		labels[2].setPos(0, 0);
+		labels[3].setPos(0, 0);
+		labels[4].setPos(0, 0);
+		labels[5].setPos(0, 0);
 	},
 	
 	onMouseDown: function(e)

@@ -124,11 +124,13 @@ Map.prototype = {
 		return worldPos;
 	},
 	
-	mapToScreen: function(x, y)
+	mapToScreen: function(x, y, h)
 	{
+		h = h || 0;
+		
 		return [
-			display.width / 2 + (x + y % 2 * 0.5 - camera.pos[0]) * camera.zoom,
-			display.height / 2 + (y / 2 - camera.pos[1]) * camera.zoom,
+			display.width / 2 + (x + abs(y % 2) * 0.5 - camera.pos[0]) * camera.zoom,
+			display.height / 2 + (y / 2 - camera.pos[1] - h / 3 * sqrt(2 / 3)) * camera.zoom,
 		];
 	},
 	
@@ -138,6 +140,21 @@ Map.prototype = {
 			1 * (camera.pos[0] + (x - display.width  / 2) / camera.zoom),
 			2 * (camera.pos[1] + (y - display.height / 2) / camera.zoom) * this.triaHeight,
 		];
+	},
+	
+	getHeight: function(x, y)
+	{
+		var chunkCoord = this.chunkCoord(x, y);
+		var localCoord = this.localCoord(x, y);
+		var chunk = this.getChunk(chunkCoord[0], chunkCoord[1]);
+		var linearCoord = this.linearLocalCoord(localCoord[0], localCoord[1]);
+		
+		if(chunk !== undefined) {
+			return chunk.heights.data[linearCoord];
+		}
+		else {
+			return 0;
+		}
 	},
 
 	getVertex: function(x, y)
@@ -223,7 +240,7 @@ Map.prototype = {
 			chunk.updateNormals();
 			
 			var f = this.getChunk(x - 1, y);
-			//if(f) f.updateNormals();
+			if(f) f.updateNormals();
 		}
 	},
 	

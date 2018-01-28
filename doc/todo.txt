@@ -1,7 +1,6 @@
 todo
 ====
 
-* picking
 * path finding
 * chunk culling
 * script for source bundling
@@ -16,6 +15,10 @@ todo
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
 * put 3 dev screenshots in a README.md
+* consequent use of vectors in map methods
+* clean picking procedure
+* bug: dyn2darray:37 : this.rows[y - this.top] gets undefined
+* bug: map.addChunk(-x,0) renders wrapped noise
 
 done
 ====
@@ -25,3 +28,4 @@ done
 * cache structure for loader
 * visualize noise as pixel map for debugging
 * texture packing
+* picking

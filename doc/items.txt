@@ -1,0 +1,4 @@
+* wood - cut down tree
+* plank - process wood in sawmill
+* stone - cut stone from rock
+* wheat - wheat field
