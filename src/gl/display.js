@@ -51,14 +51,14 @@ Display.prototype = {
 
 	resize: function(width, height)
 	{
-		this.width = width;
-		this.height = height;;
-		this.canvas.width = width;
-		this.canvas.height = height;
-		this.container.style.width = width + "px";
-		this.container.style.height = height + "px";
+		this.width = floor(width / 2) * 2;
+		this.height = floor(height / 2) * 2;
+		this.canvas.width = this.width;
+		this.canvas.height = this.height;
+		this.container.style.width = this.width + "px";
+		this.container.style.height = this.height + "px";
 	
-		this.gl.viewport(0, 0, width, height);
+		this.gl.viewport(0, 0, this.width, this.height);
 		
 		return this;
 	},

@@ -27,11 +27,11 @@ function onGameLoad()
 	//camera.zoom = 2.546;
 	//camera.pos = [150, 120];
 	
-	var dim = 1;
+	var dim = 2;
 	
-	for(var x=0; x<=dim; x++) {
-		for(var y=0; y<=dim; y++) {
-			map.addChunk(x, y);
+	for(var x=-dim; x<=dim; x++) {
+		for(var y=-dim; y<=dim; y++) {
+			map.addChunk([x, y]);
 		}
 	}
 	

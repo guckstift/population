@@ -1,4 +1,5 @@
 * wood - cut down tree
 * plank - process wood in sawmill
 * stone - cut stone from rock
-* wheat - wheat field
+* wheat - harvest wheat field
+* coal - burn wood in charburner

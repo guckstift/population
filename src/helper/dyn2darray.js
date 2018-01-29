@@ -9,6 +9,8 @@ function Dyn2dArray()
 	this.top = 0;
 	this.right = 0;
 	this.bottom = 0;
+	this.width = 0;
+	this.height = 0;
 	this.rows = [];
 	this.cellFactory = function() { return undefined; };
 }
@@ -18,6 +20,37 @@ Dyn2dArray.prototype = {
 	constructor: Dyn2dArray,
 	
 	get: function(x, y)
+	{
+		this.expandTo(x, y);
+		
+		return (
+			this.rows[y - this.top][x - this.left] ||
+			(this.rows[y - this.top][x - this.left] = this.cellFactory(x, y))
+		);
+	},
+	
+	set: function(x, y, value)
+	{
+		this.expandTo(x, y);
+		this.rows[y - this.top][x - this.left] = value;
+	},
+	
+	each: function(callback)
+	{
+		for(var y=0; y < this.rows.length; y++) {
+			var rows = this.rows[y];
+			
+			for(var x=0; x < rows.length; x++) {
+				var cell = rows[x];
+				
+				if(cell !== undefined) {
+					callback(cell, x, y);
+				}
+			}
+		}
+	},
+	
+	expandTo: function(x, y)
 	{
 		if(x < this.left) {
 			this.expandLeft(x);
@@ -32,13 +65,6 @@ Dyn2dArray.prototype = {
 		else if(y >= this.bottom) {
 			this.expandBottom(y + 1);
 		}
-		
-		var cell = this.rows[y - this.top][x - this.left];
-		
-		return (
-			this.rows[y - this.top][x - this.left] ||
-			(this.rows[y - this.top][x - this.left] = this.cellFactory(x, y))
-		);
 	},
 
 	expandLeft: function(left)
@@ -52,6 +78,7 @@ Dyn2dArray.prototype = {
 		}
 		
 		this.left = left;
+		this.width += add;
 	},
 	
 	expandRight: function(right)
@@ -65,6 +92,7 @@ Dyn2dArray.prototype = {
 		}
 		
 		this.right = right;
+		this.width += add;
 	},
 	
 	expandTop: function(top)
@@ -76,10 +104,11 @@ Dyn2dArray.prototype = {
 		this.rows = Array(add).concat(this.rows);
 		
 		for(var i=0; i < add; i++) {
-			this.rows[i] = Array(this.right - this.left);
+			this.rows[i] = Array(this.width);
 		}
 		
 		this.top = top;
+		this.height += add;
 	},
 	
 	expandBottom: function(bottom)
@@ -91,10 +120,11 @@ Dyn2dArray.prototype = {
 		this.rows = this.rows.concat(Array(add));
 		
 		for(var i=0; i < add; i++) {
-			this.rows[this.bottom + i] = Array(this.right - this.left);
+			this.rows[this.height + i] = Array(this.width);
 		}
 		
 		this.bottom = bottom;
+		this.height += add;
 	},
 
 };

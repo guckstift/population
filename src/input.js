@@ -56,7 +56,7 @@ Input.prototype = {
 			var oddshift = oddstart ? !oddrow * !before * +1 : oddrow * before * -1;
 			var scx = mx + oddshift;
 			var scy = my + i;
-			var screenPos = map.mapToScreen(scx, scy, map.getHeight(scx, scy));
+			var screenPos = mapToScreen([scx, scy, map.getHeight([scx, scy])]);
 			var dist = (this.mouseX - screenPos[0]) ** 2 + (this.mouseY - screenPos[1]) ** 2
 			labels[i].setPos(screenPos[0], screenPos[1]);
 			
@@ -67,7 +67,7 @@ Input.prototype = {
 			}
 		}
 		
-		var screenPos = map.mapToScreen(bestx, besty, map.getHeight(bestx, besty));
+		var screenPos = mapToScreen([bestx, besty, map.getHeight([bestx, besty])]);
 		labels[0].setPos(screenPos[0], screenPos[1]);
 		labels[1].setPos(0, 0);
 		labels[2].setPos(0, 0);

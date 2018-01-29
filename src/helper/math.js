@@ -10,6 +10,13 @@ round = Math.round;
 sin = Math.sin;
 sqrt = Math.sqrt;
 
+function mod(x, y)
+{
+	var z = x % y;
+	
+	return z + (z < 0) * y;
+}
+
 function radians(d)
 {
 	return d * pi / 180;
@@ -67,6 +74,16 @@ function linearMix(x, y, a)
 function smoothMix(x, y, a)
 {
 	return x + a * a * (3 - 2 * a) * (y - x);
+}
+
+function vec2vec3(v, f)
+{
+	return [v[0], v[1], f];
+}
+
+function vec3xy(v)
+{
+	return [v[0], v[1]];
 }
 
 function vec3add(a, b)
