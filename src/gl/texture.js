@@ -1,11 +1,11 @@
-function Texture(display)
+function Texture(disp)
 {
-	display = display || window.display;
+	disp = disp || display;
 	
-	var gl = display.gl;
+	var gl = disp.gl;
 	
-	this.display = display;
-	this.gl = display.gl;
+	this.display = disp;
+	this.gl = disp.gl;
 	this.tex = this.gl.createTexture();
 
 	gl.bindTexture(gl.TEXTURE_2D, this.tex);
@@ -29,10 +29,18 @@ Texture.prototype = {
 
 };
 
-loader.texture = function(url, callback, display)
+loader.texture = function(url, callback, disp)
 {
+	function imageLoad()
+	{
+		var img = this.getItem(url);
+		var tex = new Texture(disp).fromImage(img);
+		this.setItem(url, tex);
+		callback();
+	}
+	
 	callback = callback || noop;
-	display = display || window.display;
+	disp = disp || display;
 
 	if(this.getItem(url) !== undefined) {
 		callback();
@@ -41,12 +49,4 @@ loader.texture = function(url, callback, display)
 	this.image(url, imageLoad.bind(this));
 
 	return this;
-	
-	function imageLoad()
-	{
-		var img = this.getItem(url);
-		var tex = new Texture(display).fromImage(img);
-		this.setItem(url, tex);
-		callback();
-	}
 };

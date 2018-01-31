@@ -1,8 +1,8 @@
-function Label(text, x, y, display)
+function Label(text, x, y, disp)
 {
-	display = display || window.display;
+	disp = disp || display;
 	
-	this.display = display;
+	this.display = disp;
 	this.div = newElm("div");
 	this.div.style.position = "absolute";
 	this.display.container.appendChild(this.div);

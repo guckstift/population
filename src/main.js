@@ -1,3 +1,6 @@
+var onGameLoad;
+var onRender;
+
 loader
 	.texture("gfx/terrain.png")
 	.shader(
@@ -10,14 +13,14 @@ loader
 		["shaders/utils.glslv", "shaders/mapcoord.vert.glslv"],
 		["shaders/utils.glslv", "shaders/mapcoord.frag.glslf"],
 	)
-	.ready(onGameLoad)
+	.ready(onGameLoad);
 
 function onGameLoad()
 {
 	display
 		.attachToBody()
 		.enableFullPageMode()
-		.setBgColor(1,1,1, 1)
+		.setBgColor(1,1,1, 1);
 	
 	camera = new Camera();
 	map = new Map();

@@ -115,4 +115,4 @@ Display.prototype = {
 
 };
 
-display = new Display();
+var display = new Display();

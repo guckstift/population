@@ -1,11 +1,11 @@
-function Buffer(type, indexBuf, display)
+function Buffer(type, indexBuf, disp)
 {
-	display = display || window.display;
+	disp = disp || display;
 	
-	var gl = display.gl;
+	var gl = disp.gl;
 	
-	this.display = display;
-	this.gl = display.gl;
+	this.display = disp;
+	this.gl = disp.gl;
 	this.type = type;
 	this.indexBuf = indexBuf || false;
 	this.target = this.indexBuf ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
@@ -97,7 +97,7 @@ Buffer.prototype = {
 
 };
 
-Buffer.fromArray = function(type, array, indexBuf, display)
+Buffer.fromArray = function(type, array, indexBuf, disp)
 {
-	return new Buffer(type, indexBuf, display).resize(array.length).set(0, array);
+	return new Buffer(type, indexBuf, disp).resize(array.length).set(0, array);
 };

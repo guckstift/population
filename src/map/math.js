@@ -7,26 +7,26 @@
 
 */
 
-triaHeight = sqrt(3) / 2;
-viewAngle = acos(1 / sqrt(3));
-viewAngleSin = sqrt(2 / 3);
-viewAngleCos = 1 / sqrt(3);
-heightScale = 1 / 3;
+var triaHeight = sqrt(3) / 2;
+var viewAngle = acos(1 / sqrt(3));
+var viewAngleSin = sqrt(2 / 3);
+var viewAngleCos = 1 / sqrt(3);
+var heightScale = 1 / 3;
 
-sun = [0, 0, -1];
+var sun = [0, 0, -1];
 sun = vec3rotateX(sun, radians(-45));
 sun = vec3rotateZ(sun, radians(30));
 
-chunkSize = 32;
-chunkWidth = chunkSize;
-chunkHeight = chunkSize * 2;
-numVertsPerRow = chunkWidth + 1;
-numVertRows = chunkHeight + 1;
-numVerts = numVertRows * numVertsPerRow;
-numTriasPerRow = chunkSize * 2;
-numTriaRows = chunkSize * 2;
-numTrias = numTriaRows * numTriasPerRow;
-numIndices = (numTriasPerRow + 2 + 2) * numTriaRows - 2;
+var chunkSize = 32;
+var chunkWidth = chunkSize;
+var chunkHeight = chunkSize * 2;
+var numVertsPerRow = chunkWidth + 1;
+var numVertRows = chunkHeight + 1;
+var numVerts = numVertRows * numVertsPerRow;
+var numTriasPerRow = chunkSize * 2;
+var numTriaRows = chunkSize * 2;
+var numTrias = numTriaRows * numTriasPerRow;
+var numIndices = (numTriasPerRow + 2 + 2) * numTriaRows - 2;
 
 function leftFrom(p)
 {

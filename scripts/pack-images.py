@@ -1,5 +1,50 @@
 #!/usr/bin/env python3
 
+def findpos(destw, desth, srcw, srch, left, extents):
+
+	while left + srcw <= destw:
+	
+		if max(extents[left : left + srcw]) + srch <= desth:
+			return left
+		
+		left += 1
+	
+	left = 0
+	
+	while left + srcw <= destw:
+	
+		if max(extents[left : left + srcw]) + srch <= desth:
+			return left
+		
+		left += 1
+	
+	return None
+
+def packwith(destw, desth, textures):
+
+	left = 0
+	top = 0
+	extents = [0] * destw
+	count = 0
+
+	for tex in textures:
+	
+		width = tex["crop"].width
+		height = tex["crop"].height
+		found = findpos(destw, desth, width, height, left, extents)
+		
+		if found is None:
+			break
+		
+		left = found
+		top = max(extents[left : left + width])
+		tex["texpos"] = (left, top)
+		extents[left : left + width] = [top + height] * width
+		left += width
+		count += 1
+
+	return count
+
 import sys
 import os.path
 import json
@@ -9,79 +54,64 @@ outfile = sys.argv[1]
 infiles = sys.argv[2:]
 textures = []
 
-print(str(len(infiles)), "images to store")
+total = len(infiles)
+
+print(total, "images to store")
 
 for name in infiles:
 	orig = Image.open(name)
 	bbox = orig.getbbox()
 	crop = orig.crop(bbox)
 	textures.append({
-		"name": name,
+		"name": os.path.basename(name),
 		"orig": orig,
 		"bbox": bbox,
 		"crop": crop,
 	})
 
-textures.sort(key = lambda x: x["crop"].size[1], reverse = True)
+textures.sort(key = lambda x: x["crop"].height, reverse = True) # sort by descending height
 
-for power in range(1,12):
-	size = 2 ** power
-	okay = True
-	left = 0
-	top = 0
-	extents = [0] * size
-	count = 0
+for powerx in range(12):
+
+	for powery in range(powerx + 1):
 	
+		sizex = 2 ** powerx
+		sizey = 2 ** powery
+		count = packwith(sizex, sizey, textures)
+		
+		if count == total: break
+		
+		print("size", sizex, "x", sizey, "did not work.", count, "images fit into it.")
+	
+	if count == total: break
+
+if count == total:
+
+	print("size", sizex, "x", sizey, "did work. all", count, "images fit into it.")
+	
+	result = Image.new("RGBA", (sizex, sizey))
+
 	for tex in textures:
-		width = tex["crop"].width
-		height = tex["crop"].height
-		
-		if left + width > size:
-			left = 0
-		
-		top = max(extents[left : left + width])
-		
-		while top + height > size:
-			left += 1
-			top = max(extents[left : left + width])
-			
-			if left + width > size:
-				okay = False
-				break
-		
-		if not okay:
-			break
-		
-		tex["texpos"] = (left, top)
-		extents[left : left + width] = [top + height] * width
-		left += width
-		count += 1
-	
-	if okay:
-		break
-	
-	print("size", size, "did not work.", count, "images fit into it.")
+		result.paste(tex["crop"], tex["texpos"])
 
-result = Image.new("RGBA", (size, size))
+	result.save(outfile)
 
-for tex in textures:
-	result.paste(tex["crop"], tex["texpos"])
+	texdata = {
+		"source": outfile,
+		"size": [sizex, sizey],
+		"textures": [
+			{
+				"name": tex["name"],
+				"size": tex["crop"].size,
+				"osize": tex["orig"].size,
+				"bbox": tex["bbox"],
+				"texpos": tex["texpos"],
+			}
+			for tex in textures
+		]
+	}
 
-result.save(outfile)
-
-texdata = {
-	"name": outfile,
-	"size": size,
-	"textures": [
-		{
-			"name": tex["name"],
-			"origsize": tex["orig"].size,
-			"cropbox": tex["bbox"],
-			"texpos": tex["texpos"],
-		}
-		for tex in textures
-	]
-}
-
-jsonfile = os.path.splitext(outfile)[0] + ".json"
-open(jsonfile, "w").write(json.dumps(texdata, indent = "\t"))
+	jsonfile = os.path.splitext(outfile)[0] + ".json"
+	fs = open(jsonfile, "w")
+	json = json.dumps(texdata, sort_keys = True, separators = (",",":"))
+	fs.write(json)

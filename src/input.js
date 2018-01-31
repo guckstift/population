@@ -1,9 +1,9 @@
-function Input(display)
+function Input(disp)
 {
-	display = display || window.display;
+	disp = disp || display;
 	
-	this.display = display;
-	this.elm = display.container;
+	this.display = disp;
+	this.elm = disp.container;
 	this.moving = false;
 	
 	this.elm.addEventListener("mousemove", this.onMouseMove.bind(this));
@@ -57,7 +57,8 @@ Input.prototype = {
 			var scx = mx + oddshift;
 			var scy = my + i;
 			var screenPos = mapToScreen([scx, scy, map.getHeight([scx, scy])]);
-			var dist = (this.mouseX - screenPos[0]) ** 2 + (this.mouseY - screenPos[1]) ** 2
+			var dist = pow(this.mouseX - screenPos[0], 2) + pow(this.mouseY - screenPos[1], 2);
+			
 			labels[i].setPos(screenPos[0], screenPos[1]);
 			
 			if(dist < bestd) {

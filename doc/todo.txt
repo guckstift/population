@@ -3,16 +3,13 @@ todo
 
 * path finding
 * chunk culling
-* script for source bundling
 * find a name for the game
 * blender villager
 * optimize normal calculation
-* pack non-square texture atlases
 * load texture atlases
 * implement sprite batch
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
-* put 3 dev screenshots in a README.md
 * clean picking procedure
 
 done
@@ -29,3 +26,6 @@ done
 * use Dyn2dArray for Map
 * bug: dyn2darray:37 : this.rows[y - this.top] gets undefined
 * bug: map.addChunk(-x,0) renders wrapped noise
+* put 3 dev screenshots in a README.md
+* pack non-square texture atlases
+* script for source bundling

@@ -1,11 +1,11 @@
-function Shader(vertSrc, fragSrc, display)
+function Shader(vertSrc, fragSrc, disp)
 {
-	display = display || window.display;
+	disp = disp || window.display;
 	
-	var gl = display.gl;
+	var gl = disp.gl;
 	
-	this.display = display;
-	this.gl = display.gl;
+	this.display = disp;
+	this.gl = disp.gl;
 	this.vertSrc = vertSrc;
 	this.fragSrc = fragSrc;
 	this.texUnitCounter = 0;
@@ -175,7 +175,7 @@ Shader.prototype = {
 			throw "Error: Uniform type must be sampler2D.";
 		}
 		
-		this.gl.activeTexture(this.gl.TEXTURE0 + this.texUnitCounter)
+		this.gl.activeTexture(this.gl.TEXTURE0 + this.texUnitCounter);
 		this.gl.bindTexture(this.gl.TEXTURE_2D, texture.tex);
 		this.gl.uniform1i(location, this.texUnitCounter);
 		this.texUnitCounter ++;
@@ -215,7 +215,7 @@ Shader.prototype = {
 
 cache.shaders = cache.shaders || {};
 
-loader.shader = function(shaderName, vertUrls, fragUrls, callback, display)
+loader.shader = function(shaderName, vertUrls, fragUrls, callback, disp)
 {
 	vertUrls = Array.isArray(vertUrls) ? vertUrls : [vertUrls];
 	fragUrls = Array.isArray(fragUrls) ? fragUrls : [fragUrls];
@@ -225,8 +225,38 @@ loader.shader = function(shaderName, vertUrls, fragUrls, callback, display)
 	var vertSrc = null;
 	var fragSrc = null;
 	
+	function vertSrcLoad()
+	{
+		vertUrlsToLoad --;
+	
+		if(vertUrlsToLoad === 0) {
+			vertSrc = "precision highp float;precision highp int;";
+			vertSrc += this.combineTextFromUrls(vertUrls);
+			
+			if(vertSrc !== null && fragSrc !== null) {
+				cache.shaders[shaderName] = new Shader(vertSrc, fragSrc, disp);
+				callback();
+			}
+		}
+	}
+	
+	function fragSrcLoad()
+	{
+		fragUrlsToLoad --;
+	
+		if(fragUrlsToLoad === 0) {
+			fragSrc = "precision highp float;precision highp int;";
+			fragSrc += this.combineTextFromUrls(fragUrls);
+			
+			if(vertSrc !== null && fragSrc !== null) {
+				cache.shaders[shaderName] = new Shader(vertSrc, fragSrc, disp);
+				callback();
+			}
+		}
+	}
+	
 	callback = callback || noop;
-	display = display || window.display;
+	disp = disp || display;
 
 	if(cache.shaders[shaderName]) {
 		callback();
@@ -246,36 +276,6 @@ loader.shader = function(shaderName, vertUrls, fragUrls, callback, display)
 	}
 	
 	return this;
-	
-	function vertSrcLoad()
-	{
-		vertUrlsToLoad --;
-	
-		if(vertUrlsToLoad === 0) {
-			vertSrc = "precision highp float;precision highp int;";
-			vertSrc += this.combineTextFromUrls(vertUrls);
-			
-			if(vertSrc !== null && fragSrc !== null) {
-				cache.shaders[shaderName] = new Shader(vertSrc, fragSrc, display);
-				callback();
-			}
-		}
-	}
-	
-	function fragSrcLoad()
-	{
-		fragUrlsToLoad --;
-	
-		if(fragUrlsToLoad === 0) {
-			fragSrc = "precision highp float;precision highp int;";
-			fragSrc += this.combineTextFromUrls(fragUrls);
-			
-			if(vertSrc !== null && fragSrc !== null) {
-				cache.shaders[shaderName] = new Shader(vertSrc, fragSrc, display);
-				callback();
-			}
-		}
-	}
 };
 
 loader.combineTextFromUrls = function(urls)

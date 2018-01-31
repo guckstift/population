@@ -1,14 +1,15 @@
-abs = Math.abs;
-acos = Math.acos;
-cos = Math.cos;
-floor = Math.floor;
-max = Math.max;
-min = Math.min;
-pi = Math.PI
-random = Math.random;
-round = Math.round;
-sin = Math.sin;
-sqrt = Math.sqrt;
+var abs = Math.abs;
+var acos = Math.acos;
+var cos = Math.cos;
+var floor = Math.floor;
+var max = Math.max;
+var min = Math.min;
+var pi = Math.PI;
+var pow = Math.pow;
+var random = Math.random;
+var round = Math.round;
+var sin = Math.sin;
+var sqrt = Math.sqrt;
 
 function mod(x, y)
 {

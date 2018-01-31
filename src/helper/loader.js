@@ -1,7 +1,7 @@
-cache = {
+var cache = {
 };
 
-loader = {
+var loader = {
 
 	itemsToLoad: 0,
 	waitCallback: noop,
@@ -88,6 +88,20 @@ loader = {
 	{
 		var img = newElm("img");
 		
+		function imgLoad()
+		{
+			this.setItem(url, img);
+			//this.images[name] = img;
+			this.itemsToLoad--;
+			callback();
+
+			if(this.itemsToLoad === 0) {
+				var cb = this.waitCallback;
+				this.waitCallback = noop;
+				cb.call(this);
+			}
+		}
+		
 		callback = callback || noop;
 		
 		if(this.getItem(url) !== undefined) {
@@ -102,40 +116,11 @@ loader = {
 		img.src = url;
 	
 		return this;
-		
-		function imgLoad()
-		{
-			this.setItem(url, img);
-			//this.images[name] = img;
-			this.itemsToLoad--;
-			callback();
-
-			if(this.itemsToLoad === 0) {
-				var cb = this.waitCallback;
-				this.waitCallback = noop;
-				cb.call(this);
-			}
-		}
 	},
 	
 	text: function(url, callback)
 	{
 		var xhr = new XMLHttpRequest();
-		
-		callback = callback || noop;
-		
-		if(this.getItem(url) !== undefined) {
-			callback();
-			return this;
-		}
-		
-		this.itemsToLoad++;
-
-		xhr.open("GET", url);
-		xhr.addEventListener("load", xhrLoad.bind(this));
-		xhr.send();
-	
-		return this;
 		
 		function xhrLoad()
 		{
@@ -155,10 +140,33 @@ loader = {
 				this.onError(url);
 			}
 		}
+		
+		callback = callback || noop;
+		
+		if(this.getItem(url) !== undefined) {
+			callback();
+			return this;
+		}
+		
+		this.itemsToLoad++;
+
+		xhr.open("GET", url);
+		xhr.addEventListener("load", xhrLoad.bind(this));
+		xhr.send();
+	
+		return this;
 	},
 
 	json: function(url, callback)
 	{
+		function textLoad()
+		{
+			var text = this.getItem(url);
+			var json = JSON.parse(text);
+			this.setItem(url, json);
+			callback();
+		}
+		
 		callback = callback || noop;
 
 		if(this.getItem(url) !== undefined) {
@@ -169,31 +177,10 @@ loader = {
 		this.text(url, textLoad.bind(this));
 	
 		return this;
-		
-		function textLoad()
-		{
-			var text = this.getItem(url);
-			var json = JSON.parse(text);
-			this.setItem(url, json);
-			callback();
-		}
 	},
 	
 	script: function(url, callback)
 	{
-		callback = callback || noop;
-
-		if(this.getItem(url) !== undefined) {
-			callback();
-			return this;
-		}
-		
-		this.itemsToLoad++;
-		
-		loadScript(url, scriptLoad.bind(this), this.onError.bind(this, url));
-		
-		return this;
-		
 		function scriptLoad()
 		{
 			this.setItem(url, true);
@@ -206,5 +193,18 @@ loader = {
 				cb.call(this);
 			}
 		}
+		
+		callback = callback || noop;
+
+		if(this.getItem(url) !== undefined) {
+			callback();
+			return this;
+		}
+		
+		this.itemsToLoad++;
+		
+		loadScript(url, scriptLoad.bind(this), this.onError.bind(this, url));
+		
+		return this;
 	},
 };

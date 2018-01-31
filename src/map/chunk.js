@@ -42,7 +42,7 @@ function Chunk(map, pos)
 		for(var y=0; y < numVertRows; y++) {
 			for(var x=0; x < numVertsPerRow; x++) {
 				var i = linearLocalCoord([x, y]);
-				var p = globalCoord(this.pos, [x, y])
+				var p = globalCoord(this.pos, [x, y]);
 				
 				var vs = [
 					map.getVertex(leftFrom(p)),
