@@ -13,6 +13,7 @@ loader
 		["shaders/utils.glslv", "shaders/mapcoord.vert.glslv"],
 		["shaders/utils.glslv", "shaders/mapcoord.frag.glslf"],
 	)
+	.atlas("gfx/test.json")
 	.ready(onGameLoad);
 
 function onGameLoad()
@@ -25,10 +26,6 @@ function onGameLoad()
 	camera = new Camera();
 	map = new Map();
 	input = new Input();
-	
-	//camera.zoom = 128;
-	//camera.zoom = 2.546;
-	//camera.pos = [150, 120];
 	
 	var dim = 2;
 	

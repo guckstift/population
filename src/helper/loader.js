@@ -36,10 +36,15 @@ var loader = {
 		var path = url.split("/").filter(Boolean);
 		
 		for(var i=0; i<path.length; i++) {
-			path[i] = path[i].replace(/[^a-zA-Z0-9]+/g, "_");
+			path[i] = this.filenameToIdent(path[i]);
 		}
 		
 		return path;
+	},
+	
+	filenameToIdent: function(filename)
+	{
+		return filename.replace(/[^a-zA-Z0-9]+/g, "_");
 	},
 	
 	setItem: function(url, item)

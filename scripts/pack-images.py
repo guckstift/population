@@ -38,7 +38,7 @@ def packwith(destw, desth, textures):
 		
 		left = found
 		top = max(extents[left : left + width])
-		tex["texpos"] = (left, top)
+		tex["pos"] = (left, top)
 		extents[left : left + width] = [top + height] * width
 		left += width
 		count += 1
@@ -48,7 +48,7 @@ def packwith(destw, desth, textures):
 import sys
 import os.path
 import json
-from PIL import Image
+from PIL import Image, ImageDraw
 
 outfile = sys.argv[1]
 infiles = sys.argv[2:]
@@ -60,7 +60,7 @@ print(total, "images to store")
 
 for name in infiles:
 	orig = Image.open(name)
-	bbox = orig.getbbox()
+	bbox = orig.convert("RGBa").getbbox()
 	crop = orig.crop(bbox)
 	textures.append({
 		"name": os.path.basename(name),
@@ -68,6 +68,8 @@ for name in infiles:
 		"bbox": bbox,
 		"crop": crop,
 	})
+	
+	print(orig.size, bbox)
 
 textures.sort(key = lambda x: x["crop"].height, reverse = True) # sort by descending height
 
@@ -90,22 +92,31 @@ if count == total:
 	print("size", sizex, "x", sizey, "did work. all", count, "images fit into it.")
 	
 	result = Image.new("RGBA", (sizex, sizey))
-
+	#draw = ImageDraw.Draw(result)
+	
 	for tex in textures:
-		result.paste(tex["crop"], tex["texpos"])
+		result.paste(tex["crop"], tex["pos"])
+
+	"""for tex in textures:
+		draw.rectangle([
+			tex["pos"][0],
+			tex["pos"][1],
+			tex["pos"][0] + tex["crop"].size[0],
+			tex["pos"][1] + tex["crop"].size[1],
+		])"""
 
 	result.save(outfile)
 
 	texdata = {
 		"source": outfile,
 		"size": [sizex, sizey],
-		"textures": [
+		"frames": [
 			{
 				"name": tex["name"],
 				"size": tex["crop"].size,
 				"osize": tex["orig"].size,
-				"bbox": tex["bbox"],
-				"texpos": tex["texpos"],
+				"pos": tex["pos"],
+				"pad": tex["bbox"][:2],
 			}
 			for tex in textures
 		]

@@ -7,6 +7,8 @@ function Texture(disp)
 	this.display = disp;
 	this.gl = disp.gl;
 	this.tex = this.gl.createTexture();
+	this.img = null;
+	this.size = [0, 0];
 
 	gl.bindTexture(gl.TEXTURE_2D, this.tex);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -23,6 +25,9 @@ Texture.prototype = {
 	
 		gl.bindTexture(gl.TEXTURE_2D, this.tex);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+		
+		this.img = image;
+		this.size = [image.width, image.height];
 		
 		return this;
 	},
