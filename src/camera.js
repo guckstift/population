@@ -1,7 +1,8 @@
 function Camera()
 {
+	this.defzoom = 32; // corresponds to the width of a single triangle on the screen
+	this.zoom = this.defzoom;
 	this.pos = [0, 0];
-	this.zoom = 32;
 }
 
 Camera.prototype = {

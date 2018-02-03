@@ -77,6 +77,14 @@ function smoothMix(x, y, a)
 	return x + a * a * (3 - 2 * a) * (y - x);
 }
 
+function vec2div(a, b)
+{
+	return [
+		a[0] / b[0],
+		a[1] / b[1],
+	];
+}
+
 function vec2vec3(v, f)
 {
 	return [v[0], v[1], f];

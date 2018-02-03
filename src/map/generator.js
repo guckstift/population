@@ -4,7 +4,7 @@ mapgen = {
 		
 	height: function(x, y)
 	{
-		return this.perlin.sample(x, y) * 3;//25;
+		return 0;//this.perlin.sample(x, y) * 3;//25;
 	},
 	
 	terra: function(x, y)

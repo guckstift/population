@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+doDebug = False
+
 def findpos(destw, desth, srcw, srch, left, extents):
 
 	while left + srcw <= destw:
@@ -71,7 +73,7 @@ for name in infiles:
 	
 	print(orig.size, bbox)
 
-textures.sort(key = lambda x: x["crop"].height, reverse = True) # sort by descending height
+textures.sort(key = lambda x: x["crop"].width, reverse = True) # sort by descending width
 
 for powerx in range(12):
 
@@ -92,18 +94,21 @@ if count == total:
 	print("size", sizex, "x", sizey, "did work. all", count, "images fit into it.")
 	
 	result = Image.new("RGBA", (sizex, sizey))
-	#draw = ImageDraw.Draw(result)
+	
+	if doDebug:
+		draw = ImageDraw.Draw(result)
 	
 	for tex in textures:
 		result.paste(tex["crop"], tex["pos"])
-
-	"""for tex in textures:
-		draw.rectangle([
-			tex["pos"][0],
-			tex["pos"][1],
-			tex["pos"][0] + tex["crop"].size[0],
-			tex["pos"][1] + tex["crop"].size[1],
-		])"""
+	
+	if doDebug:
+		for tex in textures:
+			draw.rectangle([
+				tex["pos"][0],
+				tex["pos"][1],
+				tex["pos"][0] + tex["crop"].size[0],
+				tex["pos"][1] + tex["crop"].size[1],
+			])
 
 	result.save(outfile)
 

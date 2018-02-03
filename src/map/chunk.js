@@ -24,10 +24,6 @@ function Chunk(map, pos)
 	{
 		var shader = this.map.shader;
 		
-		this.heights.update();
-		this.normals.update();
-		this.terra.update();
-		
 		shader.setAttribute("aHeight", this.heights);
 		shader.setAttribute("aNormal", this.normals);
 		shader.setAttribute("aTerra", this.terra);

@@ -1,12 +1,17 @@
 function Frame(texture, framedata)
 {
 	this.texture = texture;
+	this.texgid = texture.gid;
 	this.name = framedata.name;
 	this.pos = framedata.pos;
 	this.size = framedata.size;
 	this.osize = framedata.osize;
 	this.pad = framedata.pad;
 	this.pivot = [128 - this.pad[0], 112 - this.pad[1]];
+	
+	this.texcoordpos = vec2div(this.pos, texture.size);
+	this.texcoordsize = vec2div(this.size, texture.size);
+	this.anchor = vec2div(this.pivot, this.size);
 }
 
 cache.frames = cache.frames || {};

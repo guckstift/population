@@ -1,24 +1,4 @@
-/*
-	a² + b² = c²
-	½² + h² = 1²
-	¼ + h² = 1
-	h² = 1 - ¼
-	h = sqrt(1 - ¼)
-	h = sqrt(3/4)
-	h = sqrt(3) / sqrt(4)
-	h = sqrt(3) / 2
-*/
 const float triaHeight = sqrt(3.0) / 2.0;
-
-/*
-	h_i = sqrt(3) / 2
-	h_o = ½
-	h_i * cos(a) = h_o
-	cos(a) = h_o / h_i
-	a = acos(h_o / h_i)
-	a = acos(½ / (sqrt(3) / 2)) 
-	a = acos(1 / sqrt(3))
-*/
 const float viewAngle = acos(1.0 / sqrt(3.0));
 
 float round(float x)
@@ -77,37 +57,6 @@ vec3 worldToScreen(vec3 worldPos, float zoom, vec2 cameraPos)
 	screenPos.z /= cos(viewAngle) * 8.;
 	
 	return screenPos;
-}
-
-vec3 worldToShadow(vec3 worldPos, float zoom, vec2 cameraPos, vec2 screenSize)
-{
-	vec3 uniX = rotateX(rotateZ(vec3(1,0,0), radians(-30.0)), radians(45.0));
-	vec3 uniY = rotateX(rotateZ(vec3(0,1,0), radians(-30.0)), radians(45.0));
-	vec3 uniZ = rotateX(rotateZ(vec3(0,0,1), radians(-30.0)), radians(45.0));
-	vec3 sunPos;
-	
-	sunPos = worldPos;
-	
-	sunPos = rotateZ(sunPos, radians(-30.0));
-	sunPos = rotateX(sunPos, radians(45.0));
-	sunPos.xyz -= sunPos.yxx * vec3(uniY.x, uniX.y, uniX.y) / vec3(uniY.y, uniX.x, uniX.x);
-	sunPos.z += sunPos.y * uniZ.z / uniZ.y;
-	sunPos.xy *= vec2(uniX.x, uniY.y * 2.0);
-	sunPos.z *= uniZ.z;
-	sunPos.z /= 255.0;
-	
-	sunPos.y /= triaHeight * 2.;
-	
-	sunPos.xy -= cameraPos;
-	sunPos.xy *= zoom;
-	//sunPos.z -= cameraPos.y / sin(viewAngle) / triaHeight;
-	//sunPos.z *= triaHeight * sin(viewAngle) * zoom;
-	
-	sunPos.xy /= screenSize / 2.0;
-	sunPos.y *= -1.0;
-	//sunPos.z /= screenSize.y / 2.0;
-	
-	return sunPos;
 }
 
 vec3 screenToClip(vec3 screenPos, vec2 screenSize)

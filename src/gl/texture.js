@@ -1,9 +1,12 @@
+var texGidCounter = 0;
+
 function Texture(disp)
 {
 	disp = disp || display;
 	
 	var gl = disp.gl;
 	
+	this.gid = texGidCounter++;
 	this.display = disp;
 	this.gl = disp.gl;
 	this.tex = this.gl.createTexture();

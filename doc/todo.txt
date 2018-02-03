@@ -6,7 +6,6 @@ todo
 * find a name for the game
 * blender villager
 * optimize normal calculation
-* implement sprite batch
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
 * clean picking procedure
@@ -29,3 +28,4 @@ done
 * pack non-square texture atlases
 * script for source bundling
 * load texture atlases
+* implement sprite batch

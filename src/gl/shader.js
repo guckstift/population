@@ -6,6 +6,7 @@ function Shader(vertSrc, fragSrc, disp)
 	
 	this.display = disp;
 	this.gl = disp.gl;
+	this.glia = disp.glia;
 	this.vertSrc = vertSrc;
 	this.fragSrc = fragSrc;
 	this.texUnitCounter = 0;
@@ -81,14 +82,14 @@ Shader.prototype = {
 
 	constructor: Shader,
 	
-	setAttribute: function(name, buffer, stride, offset) //, divisor)
+	setAttribute: function(name, buffer, stride, offset, divisor)
 	{
 		stride = stride || 0;
 		offset = offset || 0;
-		//divisor = divisor || 0;
+		divisor = divisor || 0;
 		
 		var gl = this.gl;
-		//var glia = this.glia;
+		var glia = this.glia;
 		var attrib = this.attributes[name];
 		
 		if(attrib === undefined) return this;
@@ -108,10 +109,11 @@ Shader.prototype = {
 			throw "Error: Attribute type not supported.";
 		}
 		
+		buffer.update();
 		gl.bindBuffer(buffer.target, buffer.buf);
 		gl.enableVertexAttribArray(location);
 		gl.vertexAttribPointer(location, components, buffer.gltype, false, stride, offset);
-		//glia.vertexAttribDivisorANGLE(location, divisor);
+		glia.vertexAttribDivisorANGLE(location, divisor);
 		
 		return this;
 	},
@@ -183,6 +185,36 @@ Shader.prototype = {
 		return this;
 	},
 	
+	setTextureArray: function(name, textures)
+	{
+		name = name + "[0]";
+		
+		var gl = this.gl;
+		var uniform = this.uniforms[name];
+		
+		if(uniform === undefined) return this;
+		
+		var type = uniform.type;
+		var location = uniform.location;
+		
+		if(type !== gl.SAMPLER_2D) {
+			throw "Error: Uniform type must be sampler2D.";
+		}
+		
+		var texUnits = Array(textures.length);
+		
+		for(var i=0; i<textures.length; i++) {
+			texUnits[i] = this.texUnitCounter + i;
+			this.gl.activeTexture(this.gl.TEXTURE0 + texUnits[i]);
+			this.gl.bindTexture(this.gl.TEXTURE_2D, textures[i].tex);
+		}
+
+		this.gl.uniform1iv(location, texUnits);
+		this.texUnitCounter += textures.length;
+		
+		return this;
+	},
+	
 	resetTextures: function()
 	{
 		this.texUnitCounter = 0;
@@ -195,19 +227,29 @@ Shader.prototype = {
 		var gl = this.gl;
 		
 		this.indexBuf = buffer;
-	
+		
+		buffer.update();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.buf);
 	},
 	
-	drawTriangleStrip: function()
+	drawTriangleStrip: function(count, instances)
 	{
 		var gl = this.gl;
+		var glia = this.glia;
+		
+		instances = instances || 1;
 		
 		if(this.indexBuf !== null) {
-			gl.drawElements(gl.TRIANGLE_STRIP, this.indexBuf.len, this.indexBuf.gltype, 0);
+			glia.drawElementsInstancedANGLE(
+				gl.TRIANGLE_STRIP,
+				this.indexBuf.len,
+				this.indexBuf.gltype,
+				0,
+				instances
+			);
 		}
 		else {
-			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+			glia.drawArraysInstancedANGLE(gl.TRIANGLE_STRIP, 0, count, instances);
 		}
 	},
 

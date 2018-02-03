@@ -36,9 +36,6 @@ function Map()
 			this.indices.set(i++, this.indices.data[i - 2]);
 		}
 	}
-	
-	this.mapCoords.update();
-	this.indices.update();
 }
 
 Map.prototype = {
