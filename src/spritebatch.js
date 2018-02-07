@@ -1,6 +1,6 @@
-function SpriteBatch()
+function SpriteBatch(total)
 {
-	this.total = 100;
+	this.total = total || 640000;
 	this.dataBlockLen = 11;
 	this.shader = cache.shaders.sprite;
 	

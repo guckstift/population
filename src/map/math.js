@@ -20,6 +20,7 @@ sun = vec3rotateZ(sun, radians(30));
 var chunkSize = 32;
 var chunkWidth = chunkSize;
 var chunkHeight = chunkSize * 2;
+var chunkVerts = chunkWidth * chunkHeight;
 var numVertsPerRow = chunkWidth + 1;
 var numVertRows = chunkHeight + 1;
 var numVerts = numVertRows * numVertsPerRow;
@@ -27,6 +28,8 @@ var numTriasPerRow = chunkSize * 2;
 var numTriaRows = chunkSize * 2;
 var numTrias = numTriaRows * numTriasPerRow;
 var numIndices = (numTriasPerRow + 2 + 2) * numTriaRows - 2;
+
+var objBlockLength = 11;
 
 function leftFrom(p)
 {

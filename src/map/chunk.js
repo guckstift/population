@@ -12,25 +12,30 @@ function Chunk(map, pos)
 			var i = linearLocalCoord([x, y]);
 			var p = globalCoord(this.pos, [x, y]);
 			
-			this.heights.set(i, map.gen.height(p[0], p[1]));
-			this.terra.set(i, map.gen.terra(p[0], p[1]));
+			this.heights.set(i, map.gen.height(p));
+			this.terra.set(i, map.gen.terra(p));
 		}
 	}
+	
+	this.objchunk = new ObjChunk(this);
 }
 
 (function() {
 
-	this.draw = function()
+	this.drawTerra = function()
 	{
 		var shader = this.map.shader;
 		
 		shader.setAttribute("aHeight", this.heights);
 		shader.setAttribute("aNormal", this.normals);
 		shader.setAttribute("aTerra", this.terra);
-		
 		shader.setUniform("uChunkCoord", this.pos);
-		
 		shader.drawTriangleStrip();
+	};
+	
+	this.drawObjs = function()
+	{
+		this.objchunk.draw();
 	};
 	
 	this.updateNormals = function()

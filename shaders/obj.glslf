@@ -2,6 +2,7 @@ uniform sampler2D uTextures[8];
 
 varying vec2 vTexCoord;
 varying float vTexId;
+varying float vDepth;
 
 void main()
 {
@@ -30,5 +31,11 @@ void main()
 		gl_FragColor = texture2D(uTextures[7], vTexCoord);
 	}
 	
-	if(gl_FragColor.a < 0.5) discard;
+	if(gl_FragColor.a == 0.0) {
+		discard;
+	}
+	
+	if(gl_FragColor.a == 1.0) {
+		gl_FragDepthEXT = vDepth;
+	}
 }

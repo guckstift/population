@@ -53,4 +53,4 @@ loader.atlas = function(url, callback, disp)
 		
 		callback();
 	}
-}
+};

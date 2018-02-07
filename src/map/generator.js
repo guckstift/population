@@ -2,14 +2,14 @@ mapgen = {
 
 	perlin: new Perlin(),
 		
-	height: function(x, y)
+	height: function(p)
 	{
-		return 0;//this.perlin.sample(x, y) * 3;//25;
+		return this.perlin.sample(p) * 4;//25;
 	},
 	
-	terra: function(x, y)
+	terra: function(p)
 	{
-		return floor(this.perlin.sample(x, y) * 2) + 1;
+		return floor(this.perlin.sample(p) * 2) + 1;
 	},
 
 };

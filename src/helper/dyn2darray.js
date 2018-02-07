@@ -19,19 +19,25 @@ Dyn2dArray.prototype = {
 
 	constructor: Dyn2dArray,
 	
-	get: function(x, y)
+	get: function(p)
 	{
-		this.expandTo(x, y);
+		var x = p[0];
+		var y = p[1];
+		
+		this.expandTo(p);
 		
 		return (
 			this.rows[y - this.top][x - this.left] ||
-			(this.rows[y - this.top][x - this.left] = this.cellFactory(x, y))
+			(this.rows[y - this.top][x - this.left] = this.cellFactory(p))
 		);
 	},
 	
-	set: function(x, y, value)
+	set: function(p, value)
 	{
-		this.expandTo(x, y);
+		var x = p[0];
+		var y = p[1];
+		
+		this.expandTo(p);
 		this.rows[y - this.top][x - this.left] = value;
 	},
 	
@@ -50,8 +56,11 @@ Dyn2dArray.prototype = {
 		}
 	},
 	
-	expandTo: function(x, y)
+	expandTo: function(p) //x, y)
 	{
+		var x = p[0];
+		var y = p[1];
+		
 		if(x < this.left) {
 			this.expandLeft(x);
 		}

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+doDebug = True
 doDebug = False
 
 def findpos(destw, desth, srcw, srch, left, extents):
@@ -73,7 +74,8 @@ for name in infiles:
 	
 	print(orig.size, bbox)
 
-textures.sort(key = lambda x: x["crop"].width, reverse = True) # sort by descending width
+# sort by descending width
+textures.sort(key = lambda x: x["crop"].width * 1000000 + x["crop"].height, reverse = True)
 
 for powerx in range(12):
 
@@ -106,8 +108,8 @@ if count == total:
 			draw.rectangle([
 				tex["pos"][0],
 				tex["pos"][1],
-				tex["pos"][0] + tex["crop"].size[0],
-				tex["pos"][1] + tex["crop"].size[1],
+				tex["pos"][0] + tex["crop"].size[0] - 1,
+				tex["pos"][1] + tex["crop"].size[1] - 1,
 			])
 
 	result.save(outfile)

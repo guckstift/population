@@ -46,3 +46,8 @@ function loadScript(url, callback, errorcb)
 	script.addEventListener("error", errorcb);
 	document.head.appendChild(script);
 }
+
+function subclass(newclass, baseclass)
+{
+	newclass.prototype = Object.create(baseclass.prototype, {constructor: newclass});
+}

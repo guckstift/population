@@ -9,13 +9,13 @@ function Display()
 	this.canvas = newElm("canvas");
 	this.gl = this.canvas.getContext("webgl", { antialias: false, alpha: false });
 	this.glia = this.gl.getExtension("ANGLE_instanced_arrays");
-	this.gleiu = this.gl.getExtension("OES_element_index_uint");
+	this.glfd = this.gl.getExtension("EXT_frag_depth");
+	//this.gleiu = this.gl.getExtension("OES_element_index_uint");
 	
 	this.gl.enable(this.gl.BLEND);
 	this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-	this.gl.enable(this.gl.DEPTH_TEST);
-	this.gl.depthFunc(this.gl.LESS);
-
+	this.gl.disable(this.gl.DEPTH_TEST);
+	
 	this.resize(800, 600);
 	this.setBgColor(0.0, 0.0, 0.0, 1.0);
 	

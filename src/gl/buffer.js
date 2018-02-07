@@ -101,3 +101,8 @@ Buffer.fromArray = function(type, array, indexBuf, disp)
 {
 	return new Buffer(type, indexBuf, disp).resize(array.length).set(0, array);
 };
+
+Buffer.ofSize = function(type, size, indexBuf, disp)
+{
+	return new Buffer(type, indexBuf, disp).resize(size);
+};

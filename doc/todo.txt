@@ -9,6 +9,11 @@ todo
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
 * clean picking procedure
+* sanitize shaders code
+* implement animated sprites
+* world bound screen sprites
+* gui sprites
+* movable sprites
 
 done
 ====
@@ -29,3 +34,4 @@ done
 * script for source bundling
 * load texture atlases
 * implement sprite batch
+* add 3 more dev screenshots with trees to README

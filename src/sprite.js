@@ -1,7 +1,7 @@
-function Sprite(frame)
+function Sprite(frame, pos)
 {
 	this.frame = frame;
-	this.pos = [0, 0];
+	this.pos = pos || [0, 0];
 	this.id = -1;
 	this.batch = null;
 }

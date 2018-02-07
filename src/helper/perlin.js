@@ -11,27 +11,30 @@ Layer.prototype = {
 
 	constructor: Layer,
 	
-	sample: function(x, y)
+	sample: function(p)
 	{
+		var x = p[0];
+		var y = p[1];
+		
 		var zx = x / this.zoom;
 		var zy = y / this.zoom;
 		var flx = floor(zx);
 		var fly = floor(zy);
 		var p = zx - flx;
 		var q = zy - fly;
-		var aa = this.samples.get(flx,     fly);
-		var ba = this.samples.get(flx + 1, fly);
-		var ab = this.samples.get(flx,     fly + 1);
-		var bb = this.samples.get(flx + 1, fly + 1);
+		var aa = this.samples.get([flx,     fly]);
+		var ba = this.samples.get([flx + 1, fly]);
+		var ab = this.samples.get([flx,     fly + 1]);
+		var bb = this.samples.get([flx + 1, fly + 1]);
 		
-		var mixFunc = smoothMix;//linearMix;
+		var mixFunc = smoothMix;
 		
 		return this.amp * mixFunc(mixFunc(aa, ba, p), mixFunc(ab, bb, p), q);
 	},
 	
-	cellFactory: function(x, y)
+	cellFactory: function(p)
 	{
-		return noise2d(x, y, this.seed);
+		return noise2d(p[0], p[1], this.seed);
 	},
 };
 
@@ -51,13 +54,13 @@ Perlin.prototype = {
 
 	constructor: Perlin,
 	
-	sample: function(x, y)
+	sample: function(p)
 	{
 		var sum = 0;
 		var ampsum = 0;
 		
 		for(var i=0; i < this.layers.length; i++) {
-			sum += this.layers[i].sample(x, y);
+			sum += this.layers[i].sample(p);
 			ampsum += this.layers[i].amp
 		}
 		

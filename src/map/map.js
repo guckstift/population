@@ -5,6 +5,7 @@ function Map()
 	this.shader = cache.shaders.map;
 	this.mapCoords = new Buffer("short").resize(numVerts * 2);
 	this.indices = new Buffer("ushort", true).resize(numIndices);
+	this.objVerts = Buffer.fromArray("byte", [0, 1, 2, 3]);
 	
 	// generate map coords for a chunk
 	for(var y=0; y < numVertRows; y++) {
@@ -51,6 +52,18 @@ Map.prototype = {
 		
 		return chunk === undefined ? 0 : chunk.heights.data[i];
 	},
+	
+	setHeight: function(p, h)
+	{
+		var cp = chunkCoord(p);
+		var lp = localCoord(p);
+		var chunk = this.getChunk(cp);
+		var i = linearLocalCoord(lp);
+		
+		if(chunk !== undefined) {
+			chunk.heights.set(i, h);
+		}
+	},
 
 	getVertex: function(p)
 	{
@@ -72,18 +85,31 @@ Map.prototype = {
 		this.shader.setTexture("uTex", cache.gfx.terrain_png);
 		
 		this.chunks.each(function(chunk, x, y) {
-			chunk.draw();
+			chunk.drawTerra();
 		});
+		
+		var gl = display.gl;
+		
+		gl.enable(gl.DEPTH_TEST);
+		gl.depthFunc(gl.GEQUAL);
+		gl.clearDepth(-1);
+		gl.clear(gl.DEPTH_BUFFER_BIT);
+		
+		this.chunks.each(function(chunk, x, y) {
+			chunk.drawObjs();
+		});
+		
+		gl.disable(gl.DEPTH_TEST);
 	},
 	
 	getChunk: function(p)
 	{
-		return this.chunks.get(p[0], p[1]);
+		return this.chunks.get(p);
 	},
 	
 	setChunk: function(p, chunk)
 	{
-		this.chunks.set(p[0], p[1], chunk);
+		this.chunks.set(p, chunk);
 	},
 	
 	addChunk: function(p)
@@ -96,6 +122,13 @@ Map.prototype = {
 			var f = this.getChunk([p[0] - 1, p[1]]);
 			if(f) f.updateNormals();
 		}
+	},
+	
+	addObj: function(obj)
+	{
+		var cp = chunkCoord(obj.pos);
+		
+		this.chunks.get(cp).objchunk.add(obj);
 	},
 	
 };

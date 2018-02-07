@@ -187,6 +187,10 @@ Shader.prototype = {
 	
 	setTextureArray: function(name, textures)
 	{
+		if(textures.length === 0) {
+			return this;
+		}
+		
 		name = name + "[0]";
 		
 		var gl = this.gl;
@@ -287,7 +291,8 @@ loader.shader = function(shaderName, vertUrls, fragUrls, callback, disp)
 		fragUrlsToLoad --;
 	
 		if(fragUrlsToLoad === 0) {
-			fragSrc = "precision highp float;precision highp int;";
+			fragSrc = "#extension GL_EXT_frag_depth : enable\n";
+			fragSrc += "precision highp float;precision highp int;";
 			fragSrc += this.combineTextFromUrls(fragUrls);
 			
 			if(vertSrc !== null && fragSrc !== null) {
