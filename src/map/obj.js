@@ -2,7 +2,10 @@ function Obj(frame, pos)
 {
 	this.frame = frame;
 	this.pos = pos || [0, 0];
-	this.chunk = null;
+	this.chunk = undefined;
+	
+	this.direction = ""; // "", "r", "l", "ru", "rd", "lu", "ld"
+	this.offset = 0; // between 0 and 1 of this.pos and the adjacent vertex of this.direction
 }
 
 Obj.prototype = {
@@ -11,17 +14,23 @@ Obj.prototype = {
 	
 	attachChunk: function(chunk)
 	{
-		this.chunk = chunk || null;
+		this.chunk = chunk || undefined;
 		
 		return this;
 	},
 	
 	setPos: function(pos)
 	{
+		var chunk = this.chunk;
+		
+		if(chunk !== undefined) {
+			chunk.remove(this);
+		}
+		
 		this.pos = pos;
 		
-		if(this.chunk !== null) {
-			this.chunk.updateData(this);
+		if(chunk !== undefined) {
+			chunk.map.addObj(this);
 		}
 		
 		return this;
@@ -31,7 +40,7 @@ Obj.prototype = {
 	{
 		this.frame = frame;
 		
-		if(this.chunk !== null) {
+		if(this.chunk !== undefined) {
 			this.chunk.updateData(this);
 		}
 		

@@ -14,6 +14,8 @@ todo
 * world bound screen sprites
 * gui sprites
 * movable sprites
+* move dev screenshots to separate page
+* migrate to own webgl and spritegl libs
 
 done
 ====

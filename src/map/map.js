@@ -70,38 +70,6 @@ Map.prototype = {
 		return mapToWorld(vec2vec3(p, this.getHeight(p)));
 	},
 	
-	draw: function()
-	{
-		this.shader.setAttribute("aMapCoord", this.mapCoords);
-		this.shader.setIndices(this.indices);
-		
-		this.shader.setUniform("uChunkSize", chunkSize);
-		this.shader.setUniform("uScreenSize", [display.width, display.height]);
-		this.shader.setUniform("uZoom", camera.zoom);
-		this.shader.setUniform("uCameraPos", camera.pos);
-		this.shader.setUniform("uSun", sun);
-		
-		this.shader.resetTextures();
-		this.shader.setTexture("uTex", cache.gfx.terrain_png);
-		
-		this.chunks.each(function(chunk, x, y) {
-			chunk.drawTerra();
-		});
-		
-		var gl = display.gl;
-		
-		gl.enable(gl.DEPTH_TEST);
-		gl.depthFunc(gl.GEQUAL);
-		gl.clearDepth(-1);
-		gl.clear(gl.DEPTH_BUFFER_BIT);
-		
-		this.chunks.each(function(chunk, x, y) {
-			chunk.drawObjs();
-		});
-		
-		gl.disable(gl.DEPTH_TEST);
-	},
-	
 	getChunk: function(p)
 	{
 		return this.chunks.get(p);
@@ -128,7 +96,64 @@ Map.prototype = {
 	{
 		var cp = chunkCoord(obj.pos);
 		
-		this.chunks.get(cp).objchunk.add(obj);
+		this.addChunk(cp);
+		
+		var chunk = this.chunks.get(cp);
+		
+		chunk.objchunk.add(obj);
+	},
+	
+	getObj: function(p)
+	{
+		var cp = chunkCoord(p);
+		var lp = localCoord(p);
+		var chunk = this.chunks.get(cp);
+		
+		if(chunk === undefined) {
+			return undefined;
+		}
+		
+		return chunk.objchunk.get(lp);
+	},
+	
+	draw: function()
+	{
+		this.shader.setAttribute("aMapCoord", this.mapCoords);
+		this.shader.setIndices(this.indices);
+		
+		this.shader.setUniform("uChunkSize", chunkSize);
+		this.shader.setUniform("uScreenSize", [display.width, display.height]);
+		this.shader.setUniform("uZoom", camera.zoom);
+		this.shader.setUniform("uCameraPos", camera.pos);
+		this.shader.setUniform("uSun", sun);
+		
+		this.shader.resetTextures();
+		this.shader.setTexture("uTex", cache.gfx.terrain_png);
+		
+		this.chunks.each(function(chunk, x, y) {
+			chunk.drawTerra();
+		});
+		
+		var gl = display.gl;
+		
+		gl.enable(gl.DEPTH_TEST);
+		gl.depthFunc(gl.GEQUAL);
+		gl.clearDepth(-1);
+		gl.clear(gl.DEPTH_BUFFER_BIT);
+		
+		var shader = cache.shaders.obj;
+		
+		shader.setUniform("uChunkSize", chunkSize);
+		shader.setUniform("uScreenSize", [display.width, display.height]);
+		shader.setUniform("uCameraPos", camera.pos);
+		shader.setUniform("uDefZoom", camera.defzoom);
+		shader.setUniform("uZoom", camera.zoom);
+		
+		this.chunks.each(function(chunk, x, y) {
+			chunk.drawObjs();
+		});
+		
+		gl.disable(gl.DEPTH_TEST);
 	},
 	
 };

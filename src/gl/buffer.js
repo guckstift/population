@@ -44,8 +44,7 @@ Buffer.prototype = {
 	resize: function(len)
 	{
 		var gl = this.gl;
-		
-		data = new this.arraytype(len);
+		var data = new this.arraytype(len);
 		
 		if(this.data !== null) {
 			data.set(this.data.subarray(0, min(this.len, len)));

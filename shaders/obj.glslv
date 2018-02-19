@@ -8,7 +8,6 @@ attribute float aTexId;
 attribute float aHeight;
 
 uniform float uChunkSize;
-uniform vec2 uChunkCoord;
 uniform vec2 uScreenSize;
 uniform vec2 uCameraPos;
 uniform float uDefZoom;
@@ -26,7 +25,6 @@ void main()
 	
 	vec2 pos = aPos / vec2(1.0, 2.0);
 	pos.x += 0.5 * mod(aPos.y, 2.0);
-	pos += uChunkCoord * uChunkSize;
 	
 	vec2 screenPos = (vert - aAnchor) * aSize * scale;
 	screenPos += pos * uZoom;

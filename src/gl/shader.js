@@ -141,11 +141,11 @@ Shader.prototype = {
 			type === gl.INT_VEC4 || gl.BOOL_VEC4 ? gl.uniform4iv :
 			type === gl.FLOAT_MAT2 ? gl.uniformMatrix2fv :
 			type === gl.FLOAT_MAT3 ? gl.uniformMatrix3fv :
-			type === gl.FLOAT_MAt4 ? gl.uniformMatrix4fv :
+			type === gl.FLOAT_MAT4 ? gl.uniformMatrix4fv :
 			null
 		);
 		
-		var matrix = type === gl.FLOAT_MAT2 || type === gl.FLOAT_MAT3 ||type === gl.FLOAT_MAT4;
+		var matrix = type === gl.FLOAT_MAT2 || type === gl.FLOAT_MAT3 || type === gl.FLOAT_MAT4;
 		
 		if(func === null) {
 			throw "Error: Uniform type not supported.";
