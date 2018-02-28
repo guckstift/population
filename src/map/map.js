@@ -1,11 +1,22 @@
-function Map()
+function Map(gl, camera)
 {
+	if(!(this instanceof Map)) {
+		return new Map(gl, camera);
+	}
+	
+	this.gl = gl;
+	this.camera = camera;
 	this.gen = mapgen;
-	this.chunks = new Dyn2dArray();
-	this.shader = cache.shaders.map;
-	this.mapCoords = new Buffer("short").resize(numVerts * 2);
-	this.indices = new Buffer("ushort", true).resize(numIndices);
-	this.objVerts = Buffer.fromArray("byte", [0, 1, 2, 3]);
+	this.chunks = Dyn2dArray();
+	this.mapCoords = gl.buffer("ubyte", numVerts * 2);
+	this.indices = gl.buffer("index", numIndices);
+	this.terraTex = gl.texture("gfx/terrain.png");
+	this.batch = gl.spritebatch("stream", camera);
+	
+	this.shader = gl.shaderFromUrl(
+		["shaders/utils.glslv", "shaders/map.glslv"],
+		["shaders/map.glslf"],
+	)
 	
 	// generate map coords for a chunk
 	for(var y=0; y < numVertRows; y++) {
@@ -50,7 +61,7 @@ Map.prototype = {
 		var chunk = this.getChunk(cp);
 		var i = linearLocalCoord(lp);
 		
-		return chunk === undefined ? 0 : chunk.heights.data[i];
+		return chunk !== undefined ? chunk.heights.data[i] : 0;
 	},
 	
 	setHeight: function(p, h)
@@ -64,10 +75,56 @@ Map.prototype = {
 			chunk.heights.set(i, h);
 		}
 	},
+	
+	getTerra: function(p)
+	{
+		var cp = chunkCoord(p);
+		var lp = localCoord(p);
+		var chunk = this.getChunk(cp);
+		var i = linearLocalCoord(lp);
+		
+		return chunk !== undefined ? chunk.terra.data[i] : 0;
+	},
+	
+	setTerra: function(p, t)
+	{
+		var cp = chunkCoord(p);
+		var lp = localCoord(p);
+		var chunk = this.getChunk(cp);
+		var i = linearLocalCoord(lp);
+		
+		if(chunk !== undefined) {
+			chunk.terra.set(i, t);
+		}
+	},
+	
+	getObj: function(p)
+	{
+		var cp = chunkCoord(p);
+		var lp = localCoord(p);
+		var chunk = this.chunks.get(cp);
+		var i = linearLocalCoord(lp);
+		
+		if(chunk === undefined) {
+			return undefined;
+		}
+		
+		return chunk.objs[i];
+	},
 
 	getVertex: function(p)
 	{
 		return mapToWorld(vec2vec3(p, this.getHeight(p)));
+	},
+	
+	getScreenVertex: function(p)
+	{
+		return worldToScreen(this.getVertex(p));
+	},
+	
+	getObjSpritePos: function(p)
+	{
+		return worldToSpriteSpace(this.getVertex(p));
 	},
 	
 	getChunk: function(p)
@@ -87,73 +144,45 @@ Map.prototype = {
 			this.setChunk(p, chunk);
 			chunk.updateNormals();
 			
-			var f = this.getChunk([p[0] - 1, p[1]]);
-			if(f) f.updateNormals();
+			//var f = this.getChunk([p[0] - 1, p[1]]);
+			//if(f) f.updateNormals();
 		}
-	},
-	
-	addObj: function(obj)
-	{
-		var cp = chunkCoord(obj.pos);
-		
-		this.addChunk(cp);
-		
-		var chunk = this.chunks.get(cp);
-		
-		chunk.objchunk.add(obj);
-	},
-	
-	getObj: function(p)
-	{
-		var cp = chunkCoord(p);
-		var lp = localCoord(p);
-		var chunk = this.chunks.get(cp);
-		
-		if(chunk === undefined) {
-			return undefined;
-		}
-		
-		return chunk.objchunk.get(lp);
 	},
 	
 	draw: function()
 	{
-		this.shader.setAttribute("aMapCoord", this.mapCoords);
-		this.shader.setIndices(this.indices);
-		
-		this.shader.setUniform("uChunkSize", chunkSize);
-		this.shader.setUniform("uScreenSize", [display.width, display.height]);
-		this.shader.setUniform("uZoom", camera.zoom);
-		this.shader.setUniform("uCameraPos", camera.pos);
-		this.shader.setUniform("uSun", sun);
-		
-		this.shader.resetTextures();
-		this.shader.setTexture("uTex", cache.gfx.terrain_png);
+		this.shader
+			.mode("trianglestrip")
+			.indices(this.indices)
+			.assign("uChunkSize", chunkSize)
+			.assign("uScreenSize", gl.size)
+			.assign("uStdDefZoom", stdDefZoom)
+			.assign("uZoom", this.camera.zoom)
+			.assign("uCameraPos", this.camera.pos)
+			.assign("uSun", sun)
+			.assign("uTex", this.terraTex)
+			.assign("aMapCoord", this.mapCoords);
 		
 		this.chunks.each(function(chunk, x, y) {
 			chunk.drawTerra();
 		});
 		
-		var gl = display.gl;
+		this.batch.clear();
 		
-		gl.enable(gl.DEPTH_TEST);
-		gl.depthFunc(gl.GEQUAL);
-		gl.clearDepth(-1);
-		gl.clear(gl.DEPTH_BUFFER_BIT);
+		var leftTop = pickMapCoord([0, 0]);
+		var rightBottom = pickMapCoord(gl.size);
 		
-		var shader = cache.shaders.obj;
+		for(var y = leftTop[1]; y < rightBottom[1]; y++) {
+			for(var x = leftTop[0]; x < rightBottom[0]; x++) {
+				var obj = this.getObj([x, y]);
+				
+				if(obj) {
+					this.batch.add(obj.sprite);
+				}
+			}
+		}
 		
-		shader.setUniform("uChunkSize", chunkSize);
-		shader.setUniform("uScreenSize", [display.width, display.height]);
-		shader.setUniform("uCameraPos", camera.pos);
-		shader.setUniform("uDefZoom", camera.defzoom);
-		shader.setUniform("uZoom", camera.zoom);
-		
-		this.chunks.each(function(chunk, x, y) {
-			chunk.drawObjs();
-		});
-		
-		gl.disable(gl.DEPTH_TEST);
+		this.batch.draw();
 	},
 	
 };

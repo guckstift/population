@@ -1,5 +1,6 @@
 const float triaHeight = sqrt(3.0) / 2.0;
 const float viewAngle = acos(1.0 / sqrt(3.0));
+const float heightScale = 1.0 / 3.0;
 
 float round(float x)
 {
@@ -33,42 +34,45 @@ vec3 rotateZ(vec3 v, float a)
 	);
 }
 
-vec3 mapToWorld(vec2 mapCoord, vec2 chunkCoord, float chunkSize, float height)
+vec2 mapLocalToGlobal(vec2 mapLocal, vec2 chunkCoord, float chunkSize)
 {
-	vec3 worldPos;
-	
-	mapCoord += chunkCoord * vec2(chunkSize, chunkSize * 2.0);
-	worldPos = vec3(mapCoord, height / 3.0);
-	worldPos.x += 0.5 * mod(mapCoord.y, 2.0);
-	worldPos.y *= triaHeight;
-	
-	return worldPos;
+	return mapLocal + chunkCoord * chunkSize * vec2(1.0, 2.0);
 }
 
-vec3 worldToScreen(vec3 worldPos, float zoom, vec2 cameraPos)
+vec3 mapToWorld(vec2 mapCoord, float height)
 {
-	vec3 screenPos;
+	vec3 p = vec3(mapCoord, height);
 	
-	screenPos = worldPos;
-	screenPos = rotateX(screenPos, viewAngle);
-	screenPos.xy -= cameraPos;
-	screenPos.xy *= zoom;
-	screenPos.z -= worldPos.y * sin(viewAngle);
-	screenPos.z /= cos(viewAngle) * 8.;
+	if(mod(floor(p.y), 2.0) == 0.0)
+		p.x += fract(p.y) * 0.5;
+	else
+		p.x += 0.5 - fract(p.y) * 0.5;
+
+	p.yz *= vec2(triaHeight, heightScale);
 	
-	return screenPos;
+	return p;
 }
 
-vec3 screenToClip(vec3 screenPos, vec2 screenSize)
+vec2 worldToScreen(vec3 worldPos, float zoom, float stdDefZoom, vec2 cameraPos, vec2 screenSize)
 {
-	vec3 clipPos;
+	vec2 p = rotateX(worldPos, viewAngle).xy;
 	
-	clipPos = screenPos;
-	clipPos.xy /= screenSize / 2.0;
-	clipPos.y *= -1.0;
-	//clipPos.z /= screenSize.y / 2.0;
+	p *= zoom * stdDefZoom;
+	p -= cameraPos * zoom;
+	p += screenSize / 2.0;
 	
-	return clipPos;
+	return p;
+}
+
+vec3 screenToClip(vec2 screenPos, vec2 screenSize)
+{
+	vec3 p = vec3(screenPos, 0.0);
+	
+	p.xy /= screenSize;
+	p.xy *= vec2(2.0, -2.0);
+	p.xy += vec2(-1.0, 1.0);
+	
+	return p;
 }
 
 float calcCoeff(vec3 sun, vec3 normal)

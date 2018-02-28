@@ -5,6 +5,10 @@
 */
 function Dyn2dArray()
 {
+	if(!(this instanceof Dyn2dArray)) {
+		return new Dyn2dArray();
+	}
+	
 	this.left = 0;
 	this.top = 0;
 	this.right = 0;

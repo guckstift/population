@@ -18,6 +18,11 @@ function mod(x, y)
 	return z + (z < 0) * y;
 }
 
+function frac(x)
+{
+	return x - floor(x);
+}
+
 function radians(d)
 {
 	return d * pi / 180;

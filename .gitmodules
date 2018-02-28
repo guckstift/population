@@ -1,0 +1,6 @@
+[submodule "libs/webgl"]
+	path = libs/webgl
+	url = git@github.com:guckstift/webgl.git
+[submodule "libs/spritegl"]
+	path = libs/spritegl
+	url = git@github.com:guckstift/spritegl.git

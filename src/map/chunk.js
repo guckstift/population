@@ -3,9 +3,12 @@ function Chunk(map, pos)
 	this.map = map;
 	this.pos = pos;
 	
-	this.heights = new Buffer("ubyte").resize(numVerts);
-	this.terra = new Buffer("ubyte").resize(numVerts);
-	this.normals = new Buffer("float").resize(numVerts * 3);
+	this.heights = gl.buffer("ubyte", numVerts);
+	this.terra = gl.buffer("ubyte", numVerts);
+	this.normals = gl.buffer(numVerts * 3);
+	this.objs = Array(chunkVerts);
+	
+	map.setChunk(pos, this);
 	
 	for(var y=0; y < numVertRows; y++) {
 		for(var x=0; x < numVertsPerRow; x++) {
@@ -17,7 +20,14 @@ function Chunk(map, pos)
 		}
 	}
 	
-	this.objchunk = new ObjChunk(this);
+	
+	for(var y=0; y < chunkHeight; y++) {
+		for(var x=0; x < chunkWidth; x++) {
+			if(random() < 0.09925) {
+				new Obj(this.map, globalCoord(this.pos, [x, y]));
+			}
+		}
+	}
 }
 
 (function() {
@@ -26,20 +36,18 @@ function Chunk(map, pos)
 	{
 		var shader = this.map.shader;
 		
-		shader.setAttribute("aHeight", this.heights);
-		shader.setAttribute("aNormal", this.normals);
-		shader.setAttribute("aTerra", this.terra);
-		shader.setUniform("uChunkCoord", this.pos);
-		shader.drawTriangleStrip();
-	};
-	
-	this.drawObjs = function()
-	{
-		this.objchunk.draw();
+		shader.draw({
+			uChunkCoord: this.pos,
+			aHeight: this.heights,
+			aNormal: this.normals,
+			aTerra: this.terra,
+		});
 	};
 	
 	this.updateNormals = function()
 	{
+		var map = this.map;
+		
 		for(var y=0; y < numVertRows; y++) {
 			for(var x=0; x < numVertsPerRow; x++) {
 				var i = linearLocalCoord([x, y]);
