@@ -15,6 +15,9 @@ var viewAngleSin = sqrt(2 / 3);
 var viewAngleCos = 1 / sqrt(3);
 var heightScale = 1 / 3;
 var stdDefZoom = 32;
+var sqrt6 = sqrt(6);
+var dsqrt3 = 2 * sqrt(3);
+var sqrt2h = sqrt(2) / 2;
 
 var sun = vec3.fromValues(0, 0, -1);
 vec3.rotateX(sun, sun, [0,0,0], glMatrix.toRadian(-45));
@@ -40,6 +43,16 @@ function leftFrom(p)
 function rightFrom(p)
 {
 	return [p[0] + 1, p[1]];
+}
+
+function upFrom(p)
+{
+	return [p[0], p[1] - 1];
+}
+
+function downFrom(p)
+{
+	return [p[0], p[1] + 1];
 }
 
 function leftUpFrom(p)

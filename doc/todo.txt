@@ -5,16 +5,17 @@ todo
 * chunk culling
 * find a name for the game
 * blender villager
-* optimize normal calculation
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
 * implement animated sprites
-* world bound screen sprites
-* gui sprites
 * movable sprites
 * move dev screenshots to separate page
-* setHeight and setTerra correctly set in all edge adjacent chunks and recalc normals
 * optimize obj sprite batching
+* basic level editing (inc/dec height, set terra, add tree, remove tree)
+* blender second tree type
+* debug picking
+* zoom to mouse
+* port pack-textures to js
 
 done
 ====
@@ -39,3 +40,7 @@ done
 * clean picking procedure
 * sanitize shaders code
 * migrate to own webgl and spritegl libs
+* gui sprites
+* world bound screen sprites
+* optimize normal calculation
+* setHeight and setTerra correctly set in all edge adjacent chunks and recalc normals

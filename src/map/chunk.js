@@ -5,32 +5,39 @@ function Chunk(map, pos)
 	
 	this.heights = gl.buffer("ubyte", numVerts);
 	this.terra = gl.buffer("ubyte", numVerts);
-	this.normals = gl.buffer(numVerts * 3);
+	this.coefs = gl.buffer(numVerts);
 	this.objs = Array(chunkVerts);
-	
-	map.setChunk(pos, this);
-	
-	for(var y=0; y < numVertRows; y++) {
-		for(var x=0; x < numVertsPerRow; x++) {
-			var i = linearLocalCoord([x, y]);
-			var p = globalCoord(this.pos, [x, y]);
-			
-			this.heights.set(i, map.gen.height(p));
-			this.terra.set(i, map.gen.terra(p));
-		}
-	}
-	
-	
-	for(var y=0; y < chunkHeight; y++) {
-		for(var x=0; x < chunkWidth; x++) {
-			if(random() < 0.09925) {
-				new Obj(this.map, globalCoord(this.pos, [x, y]));
-			}
-		}
-	}
 }
 
 (function() {
+
+	this.init = function()
+	{
+		for(var y=0; y < numVertRows; y++) {
+			for(var x=0; x < numVertsPerRow; x++) {
+				var p = globalCoord(this.pos, [x, y]);
+				var h = map.gen.height(p);
+				var t = map.gen.terra(p);
+				var i = linearLocalCoord([x, y]);
+		
+				this.heights.set(i, h);
+				this.terra.set(i, t);
+			
+				if(x === numVertsPerRow - 1 || y === numVertRows - 1) {
+					map.setHeight(p, h);
+					map.setTerra(p, t);
+				}
+			}
+		}
+	
+		for(var y=0; y < chunkHeight; y++) {
+			for(var x=0; x < chunkWidth; x++) {
+				if(random() < 0.0009925) {
+					new Obj(this.map, globalCoord(this.pos, [x, y]));
+				}
+			}
+		}
+	};
 
 	this.drawTerra = function()
 	{
@@ -39,10 +46,34 @@ function Chunk(map, pos)
 		shader.draw({
 			uChunkCoord: this.pos,
 			aHeight: this.heights,
-			aNormal: this.normals,
+			aCoef: this.coefs,
 			aTerra: this.terra,
 		});
 	};
+	
+	this.updateNormal = function(lp)
+	{
+		var i = linearLocalCoord(lp);
+		var p = globalCoord(this.pos, lp);
+		var v = map.getVertex(p);
+		var Az = map.getHeight(leftFrom(p)) * heightScale;
+		var Bz = map.getHeight(leftUpFrom(p)) * heightScale;
+		var Cz = map.getHeight(rightUpFrom(p)) * heightScale;
+		var Dz = map.getHeight(rightFrom(p)) * heightScale;
+		var Ez = map.getHeight(rightDownFrom(p)) * heightScale;
+		var Fz = map.getHeight(leftDownFrom(p)) * heightScale;
+		
+		// lambert diffuse lighting
+		var CzFz = Cz - Fz;
+		var BzEz = Bz - Ez;
+		var AzDz = Az - Dz;
+		var sqt1 = BzEz + CzFz;
+		var sqt2 = 2 * AzDz + BzEz - CzFz;
+		var c = sqrt2h * (2 * CzFz + BzEz - AzDz + 6) / sqrt(3 * sqt1 * sqt1 + sqt2 * sqt2 + 36);
+		// gamma correction
+		this.coefs.set(i, c * c * 1.5);
+	};
+
 	
 	this.updateNormals = function()
 	{
@@ -50,38 +81,46 @@ function Chunk(map, pos)
 		
 		for(var y=0; y < numVertRows; y++) {
 			for(var x=0; x < numVertsPerRow; x++) {
-				var i = linearLocalCoord([x, y]);
-				var p = globalCoord(this.pos, [x, y]);
-				
-				var vs = [
-					map.getVertex(leftFrom(p)),
-					map.getVertex(leftUpFrom(p)),
-					map.getVertex(rightUpFrom(p)),
-					map.getVertex(rightFrom(p)),
-					map.getVertex(rightDownFrom(p)),
-					map.getVertex(leftDownFrom(p)),
-				];
-			
-				var cs = [
-					vec3cross(vs[0], vs[1]),
-					vec3cross(vs[1], vs[2]),
-					vec3cross(vs[2], vs[3]),
-					vec3cross(vs[3], vs[4]),
-					vec3cross(vs[4], vs[5]),
-					vec3cross(vs[5], vs[0]),
-				];
-			
-				var ct = [0, 0, 0];
-			
-				cs.forEach(function(csk) {
-					ct = vec3add(ct, csk);
-				});
-			
-				ct = vec3normalized(ct);
-
-				this.normals.set(i * 3, ct);
+				this.updateNormal([x, y]);
 			}
 		}
 	};
-
+	
+	this.updateNormalsLeftEdge = function()
+	{
+		var map = this.map;
+		
+		for(var y=0; y < numVertRows; y++) {
+			this.updateNormal([0, y]);
+		}
+	};
+	
+	this.updateNormalsTopEdge = function()
+	{
+		var map = this.map;
+		
+		for(var x=0; x < numVertsPerRow; x++) {
+			this.updateNormal([x, 0]);
+		}
+	};
+	
+	this.updateNormalsRightEdge = function()
+	{
+		var map = this.map;
+		
+		for(var y=0; y < numVertRows; y++) {
+			this.updateNormal([numVertsPerRow - 1, y]);
+			this.updateNormal([numVertsPerRow - 2, y]);
+		}
+	};
+	
+	this.updateNormalsBottomEdge = function()
+	{
+		var map = this.map;
+		
+		for(var x=0; x < numVertsPerRow; x++) {
+			this.updateNormal([x, numVertRows - 1]);
+			this.updateNormal([x, numVertRows - 2]);
+		}
+	};
 }).call(Chunk.prototype);

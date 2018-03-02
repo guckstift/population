@@ -43,8 +43,8 @@ function Perlin()
 	this.layers = [
 		new Layer(0, 1, 1),
 		new Layer(1, 2, 2),
-		//new Layer(2, 4, 4),
-		//new Layer(3, 8, 8),
+		new Layer(2, 4, 4),
+		new Layer(3, 8, 8),
 		//new Layer(4, 16, 16),
 		//new Layer(5, 32, 32),
 	];

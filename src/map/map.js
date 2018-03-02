@@ -16,7 +16,7 @@ function Map(gl, camera)
 	this.shader = gl.shaderFromUrl(
 		["shaders/utils.glslv", "shaders/map.glslv"],
 		["shaders/map.glslf"],
-	)
+	);
 	
 	// generate map coords for a chunk
 	for(var y=0; y < numVertRows; y++) {
@@ -54,12 +54,62 @@ Map.prototype = {
 
 	constructor: Map,
 	
+	updateNormal: function(p)
+	{
+		var cp = chunkCoord(p);
+		var lp = localCoord(p);
+		var chunk = this.getChunk(cp);
+		
+		if(chunk !== undefined) {
+			chunk.updateNormal(lp);
+		
+			if(lp[0] === 0) {
+				chunk = this.getChunk([cp[0] - 1, cp[1]]);
+			
+				if(chunk !== undefined) {
+					chunk.updateNormal([numVertsPerRow - 1, lp[1]]);
+				}
+			}
+		
+			if(lp[1] === 0) {
+				chunk = this.getChunk([cp[0], cp[1] - 1]);
+			
+				if(chunk !== undefined) {
+					chunk.updateNormal([lp[0], numVertRows - 1]);
+				}
+			}
+		
+			if(lp[0] === 0 && lp[1] === 0) {
+				chunk = this.getChunk([cp[0] - 1, cp[1] - 1]);
+			
+				if(chunk !== undefined) {
+					chunk.updateNormal([numVertsPerRow - 1, numVertRows - 1]);
+				}
+			}
+		}
+	},
+	
 	getHeight: function(p)
 	{
 		var cp = chunkCoord(p);
 		var lp = localCoord(p);
 		var chunk = this.getChunk(cp);
 		var i = linearLocalCoord(lp);
+		
+		if(chunk === undefined) {
+			if(lp[0] === 0) {
+				cp[0] --;
+				chunk = this.getChunk(cp);
+				lp[0] = numVertsPerRow - 1;
+				i = linearLocalCoord(lp);
+			}
+			else if(lp[1] === 0) {
+				cp[1] --;
+				chunk = this.getChunk(cp);
+				lp[1] = numVertRows - 1;
+				i = linearLocalCoord(lp);
+			}
+		}
 		
 		return chunk !== undefined ? chunk.heights.data[i] : 0;
 	},
@@ -73,7 +123,42 @@ Map.prototype = {
 		
 		if(chunk !== undefined) {
 			chunk.heights.set(i, h);
+		
+			if(lp[0] === 0) {
+				chunk = this.getChunk([cp[0] - 1, cp[1]]);
+				i = linearLocalCoord([numVertsPerRow - 1, lp[1]]);
+			
+				if(chunk !== undefined) {
+					chunk.heights.set(i, h);
+				}
+			}
+		
+			if(lp[1] === 0) {
+				chunk = this.getChunk([cp[0], cp[1] - 1]);
+				i = linearLocalCoord([lp[0], numVertRows - 1]);
+			
+				if(chunk !== undefined) {
+					chunk.heights.set(i, h);
+				}
+			}
+		
+			if(lp[0] === 0 && lp[1] === 0) {
+				chunk = this.getChunk([cp[0] - 1, cp[1] - 1]);
+				i = linearLocalCoord([numVertsPerRow - 1, numVertRows - 1]);
+			
+				if(chunk !== undefined) {
+					chunk.heights.set(i, h);
+				}
+			}
 		}
+		
+		this.updateNormal(p);
+		this.updateNormal(leftFrom(p));
+		this.updateNormal(rightFrom(p));
+		this.updateNormal(leftUpFrom(p));
+		this.updateNormal(rightUpFrom(p));
+		this.updateNormal(leftDownFrom(p));
+		this.updateNormal(rightDownFrom(p));
 	},
 	
 	getTerra: function(p)
@@ -95,6 +180,33 @@ Map.prototype = {
 		
 		if(chunk !== undefined) {
 			chunk.terra.set(i, t);
+		
+			if(lp[0] === 0) {
+				chunk = this.getChunk([cp[0] - 1, cp[1]]);
+				i = linearLocalCoord([numVertsPerRow - 1, lp[1]]);
+			
+				if(chunk !== undefined) {
+					chunk.terra.set(i, t);
+				}
+			}
+		
+			if(lp[1] === 0) {
+				chunk = this.getChunk([cp[0], cp[1] - 1]);
+				i = linearLocalCoord([lp[0], numVertRows - 1]);
+			
+				if(chunk !== undefined) {
+					chunk.terra.set(i, t);
+				}
+			}
+		
+			if(lp[0] === 0 && lp[1] === 0) {
+				chunk = this.getChunk([cp[0] - 1, cp[1] - 1]);
+				i = linearLocalCoord([numVertsPerRow - 1, numVertRows - 1]);
+			
+				if(chunk !== undefined) {
+					chunk.terra.set(i, t);
+				}
+			}
 		}
 	},
 	
@@ -142,10 +254,23 @@ Map.prototype = {
 		if(this.getChunk(p) === undefined) {
 			var chunk = new Chunk(this, p);
 			this.setChunk(p, chunk);
+			chunk.init();
 			chunk.updateNormals();
 			
-			//var f = this.getChunk([p[0] - 1, p[1]]);
-			//if(f) f.updateNormals();
+			var f = this.getChunk([p[0] - 1, p[1]]);
+			if(f) f.updateNormalsRightEdge();
+			
+			var f = this.getChunk([p[0], p[1] - 1]);
+			if(f) f.updateNormalsBottomEdge();
+			
+			var f = this.getChunk([p[0] + 1, p[1]]);
+			if(f) f.updateNormalsLeftEdge();
+			
+			var f = this.getChunk([p[0], p[1] + 1]);
+			if(f) f.updateNormalsTopEdge();
+			
+			var f = this.getChunk([p[0] + 1, p[1] + 1]);
+			if(f) f.updateNormal([0, 0]);
 		}
 	},
 	

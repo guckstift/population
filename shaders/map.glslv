@@ -1,6 +1,6 @@
 attribute vec2 aMapCoord;
 attribute float aHeight;
-attribute vec3 aNormal;
+attribute float aCoef;
 attribute float aTerra;
 
 uniform float uChunkSize;
@@ -28,7 +28,7 @@ void main()
 	clipPos = screenToClip(screenPos, uScreenSize);
 	
 	vMapCoord = aMapCoord;
-	vCoeff = calcCoeff(uSun, aNormal);
+	vCoeff = aCoef;
 	
 	for(int i=0; i<8; i++) {
 		vUseTextures[i] = (aTerra == float(i)) ? 1.0 : 0.0;
