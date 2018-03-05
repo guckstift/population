@@ -61,7 +61,7 @@ Input.prototype = {
 		}
 		else if(e.button === 0) {
 			var p = pickMapCoord(this.mouse);
-			map.raiseHeight(p);
+			map.liftOrSinkHeight(p, false);
 		}
 	},
 	

@@ -169,16 +169,51 @@ Map.prototype = {
 		return true;
 	},
 	
-	raiseHeight: function(p, dry)
+	liftOrSinkHeightTest: function(p, sink)
 	{
-		dry = dry || false;
+		var ringsize = 0;
+		var targheight = this.getHeight(p) + (sink ? -1 : 1);
+		var changed = true;
+		
+		while(changed) {
+			var adj = hexRing(p, ringsize++);
+			changed = false;
+			
+			for(var i=0; i<adj.length; i++) {
+				var phere = adj[i];
+				var hereHeight = this.getHeight(phere);
+				
+				if(sink ? hereHeight > targheight : hereHeight < targheight) {
+					var cp = chunkCoord(phere);
+					var chunk = this.getChunk(cp);
+					
+					if(chunk === undefined) {
+						return false;
+					}
+					
+					changed = true;
+				}
+			}
+			
+			if(targheight < 0 || targheight > 255) {
+				return false;
+			}
+			
+			sink ? targheight++ : targheight--;
+		}
+		
+		return true;
+	},
+	
+	liftOrSinkHeight: function(p, sink)
+	{
+		if(this.liftOrSinkHeightTest(p, sink) === false) {
+			return false;
+		}
 		
 		var h = this.getHeight(p);
 		var adj = allAdjacent(p);
-		
-		h++;
-		
-		var ok = this.setHeight(p, h);
+		var ok = this.setHeight(p, sink ? --h : ++h);
 		
 		if(!ok) {
 			return false;
@@ -188,8 +223,8 @@ Map.prototype = {
 			var pa = adj[i];
 			var ah = this.getHeight(pa);
 			
-			if(h > ah + 1) {
-				var ok = this.raiseHeight(pa);
+			if(sink ? (h < ah - 1) : (h > ah + 1)) {
+				var ok = this.liftOrSinkHeight(pa, sink);
 			}
 		}
 		

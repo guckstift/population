@@ -107,6 +107,47 @@ function allAdjacent(p)
 	];
 }
 
+function hexRing(pivot, size)
+{
+	if(size === 0)  {
+		return [pivot];
+	}
+	
+	var set = [];
+	var left = pivot;
+	var leftup = pivot;
+	var rightup = pivot;
+	var right = pivot;
+	var rightdown = pivot;
+	var leftdown = pivot;
+
+	for(var i=0; i < size; i++) {
+		left = leftFrom(left);
+		leftup = leftUpFrom(leftup);
+		rightup = rightUpFrom(rightup);
+		right = rightFrom(right);
+		rightdown = rightDownFrom(rightdown);
+		leftdown = leftDownFrom(leftdown);
+	}
+	
+	for(var i=0; i < size; i++) {
+		set.push(left);
+		set.push(leftup);
+		set.push(rightup);
+		set.push(right);
+		set.push(rightdown);
+		set.push(leftdown);
+		left = rightUpFrom(left);
+		leftup = rightFrom(leftup);
+		rightup = rightDownFrom(rightup);
+		right = leftDownFrom(right);
+		rightdown = leftFrom(rightdown);
+		leftdown = leftUpFrom(leftdown);
+	}
+	
+	return set;
+}
+
 function linearLocalCoord(p)
 {
 	return p[0] + p[1] * numVertsPerRow;
