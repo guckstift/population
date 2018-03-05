@@ -188,7 +188,7 @@ Map.prototype = {
 			var pa = adj[i];
 			var ah = this.getHeight(pa);
 			
-			if(h > ah) {
+			if(h > ah + 1) {
 				var ok = this.raiseHeight(pa);
 			}
 		}
