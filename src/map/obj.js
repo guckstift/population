@@ -31,9 +31,13 @@ Obj.prototype = {
 		chunk.objs[i] = this;
 		
 		this.pos = pos;
-		
-		this.sprite.setPos(this.map.getObjSpritePos(this.pos));
+		this.updateSpritePos();
 		
 		return this;
+	},
+	
+	updateSpritePos: function()
+	{
+		this.sprite.setPos(this.map.getObjSpritePos(this.pos));
 	},
 };

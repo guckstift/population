@@ -121,34 +121,40 @@ Map.prototype = {
 		var chunk = this.getChunk(cp);
 		var i = linearLocalCoord(lp);
 		
-		if(chunk !== undefined) {
-			chunk.heights.set(i, h);
+		if(chunk === undefined) {
+			return false;
+		}
 		
-			if(lp[0] === 0) {
-				chunk = this.getChunk([cp[0] - 1, cp[1]]);
-				i = linearLocalCoord([numVertsPerRow - 1, lp[1]]);
-			
-				if(chunk !== undefined) {
-					chunk.heights.set(i, h);
-				}
+		chunk.heights.set(i, h);
+		
+		if(chunk.objs[i]) {
+			chunk.objs[i].updateSpritePos();
+		}
+		
+		if(lp[0] === 0) {
+			chunk = this.getChunk(leftFrom(cp));
+			i = linearLocalCoord([numVertsPerRow - 1, lp[1]]);
+		
+			if(chunk !== undefined) {
+				chunk.heights.set(i, h);
 			}
+		}
 		
-			if(lp[1] === 0) {
-				chunk = this.getChunk([cp[0], cp[1] - 1]);
-				i = linearLocalCoord([lp[0], numVertRows - 1]);
-			
-				if(chunk !== undefined) {
-					chunk.heights.set(i, h);
-				}
+		if(lp[1] === 0) {
+			chunk = this.getChunk(upFrom(cp));
+			i = linearLocalCoord([lp[0], numVertRows - 1]);
+		
+			if(chunk !== undefined) {
+				chunk.heights.set(i, h);
 			}
+		}
+	
+		if(lp[0] === 0 && lp[1] === 0) {
+			chunk = this.getChunk(leftUpFromCartes(cp));
+			i = linearLocalCoord([numVertsPerRow - 1, numVertRows - 1]);
 		
-			if(lp[0] === 0 && lp[1] === 0) {
-				chunk = this.getChunk([cp[0] - 1, cp[1] - 1]);
-				i = linearLocalCoord([numVertsPerRow - 1, numVertRows - 1]);
-			
-				if(chunk !== undefined) {
-					chunk.heights.set(i, h);
-				}
+			if(chunk !== undefined) {
+				chunk.heights.set(i, h);
 			}
 		}
 		
@@ -159,6 +165,35 @@ Map.prototype = {
 		this.updateNormal(rightUpFrom(p));
 		this.updateNormal(leftDownFrom(p));
 		this.updateNormal(rightDownFrom(p));
+		
+		return true;
+	},
+	
+	raiseHeight: function(p, dry)
+	{
+		dry = dry || false;
+		
+		var h = this.getHeight(p);
+		var adj = allAdjacent(p);
+		
+		h++;
+		
+		var ok = this.setHeight(p, h);
+		
+		if(!ok) {
+			return false;
+		}
+		
+		for(var i=0; i<adj.length; i++) {
+			var pa = adj[i];
+			var ah = this.getHeight(pa);
+			
+			if(h > ah) {
+				var ok = this.raiseHeight(pa);
+			}
+		}
+		
+		return true;
 	},
 	
 	getTerra: function(p)

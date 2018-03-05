@@ -59,6 +59,10 @@ Input.prototype = {
 			e.preventDefault();
 			e.stopPropagation();
 		}
+		else if(e.button === 0) {
+			var p = pickMapCoord(this.mouse);
+			map.raiseHeight(p);
+		}
 	},
 	
 	onMouseUp: function(e)

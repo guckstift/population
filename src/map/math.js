@@ -55,6 +55,14 @@ function downFrom(p)
 	return [p[0], p[1] + 1];
 }
 
+function leftUpFromCartes(p)
+{
+	return [
+		p[0] - 1,
+		p[1] - 1,
+	];
+}
+
 function leftUpFrom(p)
 {
 	return [
@@ -84,6 +92,18 @@ function rightDownFrom(p)
 	return [
 		p[0] + mod(p[1], 2),
 		p[1] + 1,
+	];
+}
+
+function allAdjacent(p)
+{
+	return [
+		leftFrom(p),
+		rightFrom(p),
+		leftUpFrom(p),
+		rightUpFrom(p),
+		leftDownFrom(p),
+		rightDownFrom(p),
 	];
 }
 

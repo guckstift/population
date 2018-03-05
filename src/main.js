@@ -44,7 +44,9 @@ function atlasLoad()
 	map.addChunk([1, 0]);
 	map.addChunk([0, -1]);
 	map.addChunk([-1, 0]);
-	map.addChunk([0, -2]);
+	map.addChunk([-1, -1]);
+	
+	//map.addChunk([0, -2]);
 	
 	cross.add(gl.sprite(atlas["cross.png"], [0,0], [0.5,0.5]));
 }
