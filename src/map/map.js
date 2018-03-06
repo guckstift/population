@@ -296,7 +296,7 @@ Map.prototype = {
 
 	getVertex: function(p)
 	{
-		return mapToWorld(vec2vec3(p, this.getHeight(p)));
+		return mapToWorld(vec2.vec3(p, this.getHeight(p)));
 	},
 	
 	getScreenVertex: function(p)

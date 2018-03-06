@@ -19,9 +19,9 @@ var sqrt6 = sqrt(6);
 var dsqrt3 = 2 * sqrt(3);
 var sqrt2h = sqrt(2) / 2;
 
-var sun = vec3.fromValues(0, 0, -1);
-vec3.rotateX(sun, sun, [0,0,0], glMatrix.toRadian(-45));
-vec3.rotateZ(sun, sun, [0,0,0], glMatrix.toRadian(30));
+var sun = vec3(0, 0, -1);
+sun = vec3.rotateX(sun, radians(-45));
+sun = vec3.rotateZ(sun, radians(30));
 
 var chunkSize = 32;
 var chunkWidth = chunkSize;
@@ -240,7 +240,7 @@ function pickMapCoord(p)
 		// sample screen point
 		var screenPos = mapToScreen(mapCoord3d);
 		// the squared distance from that sample to the input point
-		var dist = vec2.squaredDistance(p, screenPos);
+		var dist = vec2.sqdist(p, screenPos);
 		
 		if(bestDist !== undefined && dist > bestDist) {
 			break;

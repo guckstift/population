@@ -16,6 +16,7 @@ todo
 * debug picking
 * zoom to mouse
 * port pack-textures to js
+* bmp-font renderer
 
 done
 ====
