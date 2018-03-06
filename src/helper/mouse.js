@@ -33,7 +33,7 @@ Mouse.prototype = Object.create(Emitter.prototype);
 				alt: e.altKey,
 				shift: e.shiftKey,
 				meta: e.metaKey
-			}
+			};
 		
 			this.trigger(id, eventData);
 			
