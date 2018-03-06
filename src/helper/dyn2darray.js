@@ -60,7 +60,7 @@ Dyn2dArray.prototype = {
 		}
 	},
 	
-	expandTo: function(p) //x, y)
+	expandTo: function(p)
 	{
 		var x = p[0];
 		var y = p[1];
