@@ -15,17 +15,15 @@ function main()
 	atlas = gl.atlas("gfx/test1.json", atlasLoad);
 	map = null;
 	cross = gl.spritebatch(camera, true);
+	gui = new Gui(gl);
+	row = new WidgetRow([16, 16]);
+	btnRaise = new Button([16, 16], "Raise");
+	btnSink = new Button([16, 16], "Sink");
+	row.add(btnRaise);
+	row.add(btnSink);
+	gui.add(row);
 
 	gl.setClearColor(0,0,0,0);
-	
-	labels = [
-		new Label("A").setColor("#f00").setPos([16, 16]),
-		new Label("B").setColor("#0f0").setPos([16, 16]),
-		new Label("C").setColor("#00f").setPos([16, 16]),
-		new Label("D").setColor("#0ff").setPos([16, 16]),
-		new Label("E").setColor("#f0f").setPos([16, 16]),
-		new Label("F").setColor("#ff0").setPos([16, 16]),
-	];
 }
 
 function atlasLoad()
@@ -58,4 +56,5 @@ function render()
 	}
 	
 	cross.draw();
+	gui.draw();
 }

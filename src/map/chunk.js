@@ -32,7 +32,7 @@ function Chunk(map, pos)
 	
 		for(var y=0; y < chunkHeight; y++) {
 			for(var x=0; x < chunkWidth; x++) {
-				if(random() < 0.009925) {
+				if(random() < 0.09925) {
 					new Obj(this.map, globalCoord(this.pos, [x, y]));
 				}
 			}

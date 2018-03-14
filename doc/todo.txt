@@ -16,7 +16,6 @@ todo
 * debug picking
 * zoom to mouse
 * port pack-textures to js
-* bmp-font renderer
 
 done
 ====
@@ -45,3 +44,4 @@ done
 * world bound screen sprites
 * optimize normal calculation
 * setHeight and setTerra correctly set in all edge adjacent chunks and recalc normals
+* bmp-font renderer
