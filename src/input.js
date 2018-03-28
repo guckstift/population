@@ -47,6 +47,8 @@ Input.prototype = {
 		cross.sprites[0].setPos(map.getObjSpritePos(p));
 		
 		var screenCoord = mapToScreen(p);
+		
+		log(e);
 	},
 	
 	onMouseDown: function(e)
@@ -61,7 +63,13 @@ Input.prototype = {
 		}
 		else if(e.button === 0) {
 			var p = pickMapCoord(this.mouse);
-			map.liftOrSinkHeight(p, false);
+			var tool = toolbar.getValue();
+			
+			if(tool === "lift") {
+				map.liftOrSinkHeight(p, false);
+			} else if(tool === "sink") {
+				map.liftOrSinkHeight(p, true);
+			}
 		}
 	},
 	

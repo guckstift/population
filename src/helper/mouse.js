@@ -24,11 +24,12 @@ Mouse.prototype = Object.create(Emitter.prototype);
 		if(this.hasListeners(id)) {
 			var clientRect = this.eventTarget.getBoundingClientRect();
 			var eventData = {
+				type: id,
 				x: e.clientX - clientRect.left,
 				y: e.clientY - clientRect.top,
-				primaryButton: e.buttons & 1 > 0,
-				secondaryButton: e.buttons & 2 > 0,
-				auxilaryButton: e.buttons & 4 > 0,
+				primaryButton: (e.buttons & 1) > 0,
+				secondaryButton: (e.buttons & 2) > 0,
+				auxilaryButton: (e.buttons & 4) > 0,
 				ctrl: e.ctrlKey,
 				alt: e.altKey,
 				shift: e.shiftKey,

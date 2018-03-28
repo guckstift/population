@@ -1,29 +1,16 @@
-function WidgetRow(pos)
-{
-	this.pos = pos;
-	this.widgets = [];
-}
+var WidgetRow = defclass({
 
-WidgetRow.prototype = {
+	constructor: function WidgetRow()
+	{
+		this.elm = newElm("div");
+		this.elm.setAttribute("class", "WidgetRow");
+	},
 
-	constructor: WidgetRow,
-	
 	add: function(widget)
 	{
-		this.widgets.push(widget);
-	},
+		this.elm.appendChild(widget.elm);
 	
-	render: function(gui)
-	{
-		var offset = 0;
-		
-		for(var i=0; i<this.widgets.length; i++) {
-			var widget = this.widgets[i];
-			
-			widget.pos[0] = this.pos[0] + offset;
-			widget.pos[1] = this.pos[1];
-			widget.render(gui);
-			offset += widget.size[0];
-		}
+		return this;
 	},
-}
+
+});

@@ -4,10 +4,26 @@ function Emitter()
 }
 
 Emitter.prototype = {
+
+	getListeners: function(event)
+	{
+		if(typeof event === "string") {
+			return this.events[event] || [];
+		}
+		else {
+			var allListeners = [];
+			
+			for(var listeners in this.events) {
+				allListeners.push.apply(allListeners, listeners);
+			}
+			
+			return allListeners;
+		}
+	},
 	
 	hasListeners: function(event)
 	{
-		if(event !== undefined) {
+		if(typeof event === "string") {
 			var listeners = this.events[event] = this.events[event] || [];
 			
 			return listeners.length > 0;

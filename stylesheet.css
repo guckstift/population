@@ -1,0 +1,48 @@
+body {
+	background-color: #00f;
+	overflow: hidden;
+}
+
+button, label {
+	display: block;
+	font-family: sans-serif;
+	font-size: 1em;
+	font-weight: normal;
+	padding: 0.5em;
+	margin: 0.5em;
+	border: 1px solid #999;
+	background-color: #ccc;
+	cursor: pointer;
+}
+
+button:hover,
+label:hover,
+input[type="radio"]:checked + label {
+	border: 1px solid #666;
+	background-color: #999;
+}
+
+button:active,
+label:active {
+	border: 1px solid #ccc;
+}
+
+button:focus,
+label:hover {
+	outline: 0;
+}
+
+input[type="radio"] {
+	display: none;
+}
+
+.WidgetRow > * {
+	float: left;
+}
+
+.unselectable {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

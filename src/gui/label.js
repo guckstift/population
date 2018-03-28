@@ -1,15 +1,16 @@
-function Label(pos, text)
-{
-	this.pos = pos;
-	this.text = text;
-}
+var Label = defclass({
 
-Label.prototype = {
-
-	constructor: Label,
-	
-	render: function(gui)
+	constructor: function Label(text)
 	{
-		gui.font.render(gui.batch, this.pos, this.text);
+		this.elm = newElm("div");
+		this.setText(text);
 	},
-}
+
+	setText: function(text)
+	{
+		this.elm.innerHTML = text;
+	
+		return this;
+	},
+
+});

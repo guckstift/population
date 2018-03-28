@@ -9,20 +9,16 @@ addEventListener("load", main);
 
 function main()
 {
-	gl = webgl(800, 600, render, "appendToBody", "fullPage", "no-antialias", "no-alpha");
+	gl = webgl(1024, 768, render, "appendToBody", "0fullPage", "no-antialias", "no-alpha");
 	camera = gl.spritecamera([0,0], [0.5, 0.5]);
 	input = Input(gl, camera);
 	atlas = gl.atlas("gfx/test1.json", atlasLoad);
 	map = null;
 	cross = gl.spritebatch(camera, true);
-	gui = new Gui(gl);
-	row = new WidgetRow([16, 16]);
-	btnRaise = new Button([16, 16], "Raise");
-	btnSink = new Button([16, 16], "Sink");
-	row.add(btnRaise);
-	row.add(btnSink);
-	gui.add(row);
-
+	
+	toolbar = RadioGroup("tool").add("lift", "Lift").add("sink", "Sink");
+	gui = Gui().add(toolbar);
+	
 	gl.setClearColor(0,0,0,0);
 }
 
@@ -56,5 +52,5 @@ function render()
 	}
 	
 	cross.draw();
-	gui.draw();
+	//gui.draw();
 }
