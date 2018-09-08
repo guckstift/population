@@ -1,108 +1,85 @@
-function Input(gl, camera)
+class Input
 {
-	if(!(this instanceof Input)) {
-		return new Input(gl, camera);
+	constructor(elm)
+	{
+		this.elm      = elm;
+		this.mouse    = [0, 0];
+		this.mouseRel = [0, 0];
+		this.lmb      = false;
+		this.rmb      = false;
+		this.mmb      = false;
+		
+		this.elm.addEventListener("mousedown", this.onMouseDown.bind(this));
+		this.elm.addEventListener("mouseup", this.onMouseUp.bind(this));
+		this.elm.addEventListener("mousemove", this.onMouseMove.bind(this));
+		
+		this.setOnMouseDown(noop);
+		this.setOnMouseUp(noop);
+		this.setOnMouseMove(noop);
+		
+		addEventListener("contextmenu", function(e) { e.preventDefault(); });
 	}
 	
-	this.gl = gl;
-	this.elm = gl.canvas;
-	this.moving = false;
-	this.mouse = [0, 0];
-	this.mouseRel = [0, 0];
-	
-	this.elm.addEventListener("mousemove", this.onMouseMove.bind(this));
-	this.elm.addEventListener("mousedown", this.onMouseDown.bind(this));
-	this.elm.addEventListener("mouseup", this.onMouseUp.bind(this));
-	this.elm.addEventListener("wheel", this.onMouseWheel.bind(this));
-	
-	window.addEventListener("contextmenu", function(e) { e.preventDefault(); });
-}
-
-Input.prototype = {
-
-	constructor: Input,
-	
-	updateMouse: function(e)
+	updateMouse(e)
 	{
 		var rect = this.elm.getBoundingClientRect();
+		
 		this.mouseRel = [e.movementX, e.movementY];
-		this.mouse = [e.clientX - rect.left, e.clientY - rect.top];
-	},
+		this.mouse    = [e.clientX - rect.left, e.clientY - rect.top];
+		this.lmb      = (e.buttons & 1) > 0;
+		this.rmb      = (e.buttons & 2) > 0;
+		this.mmb      = (e.buttons & 4) > 0;
+	}
 	
-	onMouseMove: function(e)
+	onMouseDown(e)
 	{
-		var gl = this.gl;
-		
+		e.preventDefault();
 		this.updateMouse(e);
+		this.mouseDownCB(this);
+	}
 	
-		if(this.moving) {
-			camera.move(
-				this.mouseRel[0] / camera.zoom,
-				this.mouseRel[1] / camera.zoom,
-			);
-		}
-		
-		var p = pickMapCoord(this.mouse);
-		
-		cross.sprites[0].setPos(map.getObjSpritePos(p));
-		
-		var screenCoord = mapToScreen(p);
-		
-		log(e);
-	},
-	
-	onMouseDown: function(e)
+	onMouseUp(e)
 	{
+		e.preventDefault();
 		this.updateMouse(e);
-		
-		if(e.button === 2) {
-			this.moving = true;
-			this.gl.canvas.requestPointerLock();
-			e.preventDefault();
-			e.stopPropagation();
-		}
-		else if(e.button === 0) {
-			var p = pickMapCoord(this.mouse);
-			var tool = toolbar.getValue();
-			
-			if(tool === "lift") {
-				map.liftOrSinkHeight(p, false);
-			} else if(tool === "sink") {
-				map.liftOrSinkHeight(p, true);
-			}
-		}
-	},
+		this.mouseUpCB(this);
+	}
 	
-	onMouseUp: function(e)
+	onMouseMove(e)
 	{
+		e.preventDefault();
 		this.updateMouse(e);
+		this.mouseMoveCB(this);
+	}
+	
+	setOnMouseDown(onMouseDown)
+	{
+		this.mouseDownCB = onMouseDown;
 		
-		if(this.moving) {
-			this.moving = false;
-			document.exitPointerLock();
-		}
-	},
+		return this;
+	}
 	
-	onMouseWheel: function(e)
+	setOnMouseUp(onMouseUp)
 	{
-		this.updateMouse(e);
-
-		if(e.deltaY > 0) {
-			this.onMouseWheelDown();
-		}
-		else {
-			this.onMouseWheelUp();
-		}
-	},
+		this.mouseUpCB = onMouseUp;
+		
+		return this;
+	}
 	
-	onMouseWheelDown: function()
+	setOnMouseMove(onMouseMove)
 	{
-		camera.zoom /= 1.25;
-	},
+		this.mouseMoveCB = onMouseMove;
+		
+		return this;
+	}
 	
-	onMouseWheelUp: function()
+	lockPointer()
 	{
-		camera.zoom *= 1.25;
-	},
-
-};
+		this.elm.requestPointerLock();
+	}
+	
+	unlockPointer()
+	{
+		document.exitPointerLock();
+	}
+}

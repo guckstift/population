@@ -1,0 +1,38 @@
+@font-face {
+	font-family: "Ubuntu Mono";
+	src: url('fonts/ubuntu/UbuntuMono-R.ttf');
+}
+
+@font-face {
+	font-family: "Ubuntu Mono";
+	font-weight: bold;
+	src: url('fonts/ubuntu/UbuntuMono-B.ttf');
+}
+
+body {
+	margin: 0;
+	background-color: #003;
+}
+
+h1 {
+	font-family: "Ubuntu Mono";
+	color: #ff0;
+	text-align: center;
+	font-weight: bold;
+	font-size: 4em;
+	margin: 0.5em auto;
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+
+canvas {
+	display: block;
+	margin: 8em auto 4em;
+	position: relative;
+	border-radius: 1em;
+}
+
+#gfx {
+	display: none;
+}

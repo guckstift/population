@@ -1,6 +1,6 @@
-# my 2018 game project without a name yet
+# population
 
-It's gonna be similar to The Settlers and playable in the web browser.
+My 2018 game project. It's gonna be similar to The Settlers and playable in the web browser.
 
 ## development screenshots
 

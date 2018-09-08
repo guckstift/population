@@ -1,0 +1,2 @@
+var framesets = {} || framesets;
+framesets["tree"] = {"frames":{"tree":{"name":"tree","osize":[256,256],"ourl":"gfxsets/tree/tree.png","pad":[112,50],"pos":[142,0],"size":[71,82]},"tree2":{"name":"tree2","osize":[256,256],"ourl":"gfxsets/tree/tree2.png","pad":[112,50],"pos":[0,0],"size":[71,82]},"tree3":{"name":"tree3","osize":[256,256],"ourl":"gfxsets/tree/tree3.png","pad":[112,50],"pos":[71,0],"size":[71,82]}},"texsize":[256,128],"texurl":"gfx/tree.png"};
