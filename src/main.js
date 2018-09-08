@@ -1,1 +1,3 @@
-console.log("Hello");
+import Game from "./game.js";
+
+window.game = new Game();

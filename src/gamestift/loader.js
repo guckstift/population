@@ -3,6 +3,7 @@ var items    = {};
 var textures = {};
 var shaders  = {};
 var display  = undefined;
+var noop     = () => {};
 
 export default
 {
@@ -11,7 +12,7 @@ export default
 	textures: textures,
 	shaders: shaders,
 	
-	image(url, readyFunc = () => {})
+	image(url, readyFunc = noop)
 	{
 		var url = "gfx/" + url;
 		
@@ -30,7 +31,7 @@ export default
 		return this;
 	},
 	
-	text(url, readyFunc = () => {})
+	text(url, readyFunc = noop)
 	{
 		if(url in items) {
 			promises.push(items[url].then(val => {readyFunc(val); return val;}));
@@ -52,14 +53,14 @@ export default
 		return this;
 	},
 	
-	json(url, readyFunc = () => {})
+	json(url, readyFunc = noop)
 	{
 		this.text(url, text => readyFunc(JSON.parse(text)));
 		
 		return this;
 	},
 	
-	texture(url, readyFunc = () => {})
+	texture(url, readyFunc = noop)
 	{
 		if(url in textures) {
 			promises.push(textures[url].then(readyFunc));
@@ -78,7 +79,7 @@ export default
 		return this;
 	},
 	
-	shader(vertUrls, fragUrls, readyFunc = () => {})
+	shader(vertUrls, fragUrls, readyFunc = noop)
 	{
 		var id       = vertUrls.join("|") + "|" + fragUrls.join("|");
 		var vertUrls = vertUrls.map(v => "shaders/" + v);
