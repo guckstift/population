@@ -3,7 +3,6 @@ todo
 
 * path finding
 * chunk culling
-* find a name for the game
 * blender villager
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
@@ -15,7 +14,6 @@ todo
 * blender second tree type
 * debug picking
 * zoom to mouse
-* port pack-textures to js
 
 done
 ====
@@ -45,3 +43,5 @@ done
 * optimize normal calculation
 * setHeight and setTerra correctly set in all edge adjacent chunks and recalc normals
 * bmp-font renderer
+* find a name for the game
+* port pack-textures to js

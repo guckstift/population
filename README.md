@@ -1,9 +1,10 @@
-# my 2018 game project without a name yet
+![Population](./gfx/logo.png)
 
-It's gonna be similar to The Settlers and playable in the web browser.
+My 2018 game project. It's gonna be similar to The Settlers and playable in the web browser.
 
 ## development screenshots
 
+![2018-02-01](/doc/screenshots/2018-09-20.jpg)
 ![2018-02-01](/doc/screenshots/2018-03-05.jpg)
 ![2018-02-01](/doc/screenshots/2018-02-07_01.jpg)
 ![2018-02-02](/doc/screenshots/2018-02-07_02.jpg)

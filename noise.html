@@ -2,28 +2,26 @@
 <html>
 <head>
 	<title>Noise Test</title>
-	<script src="src/utils.js"></script>
-	<script src="src/math.js"></script>
-	<script src="src/dyn2darray.js"></script>
-	<script src="src/perlin.js"></script>
-	<script src="src/mapgen.js"></script>
 </head>
 <body>
 	<canvas id="canvas" width="800" height="800"></canvas>
-	<script>
-		var canvas = elmById("canvas");
-		var w = canvas.width;
-		var h = canvas.height;
-		var ctx = canvas.getContext("2d");
-		var imageData = ctx.getImageData(0, 0, w, h);
-		var data = imageData.data;
-		var perlin = new Perlin();
+	<script type="module">
+		import dom from "./src/utils/dom.js";
+		import Perlin from "./src/utils/perlin.js";
 		
-		for(var y=0, i=0; y<h; y++) {
-			for(var x=0; x<w; x++) {
-				//var f = noise2d(x, y, 0);
-				var f = perlin.sample(x, y)
-				var s = f * 255;
+		let canvas = dom.id("canvas");
+		let w = canvas.width;
+		let h = canvas.height;
+		let ctx = canvas.getContext("2d");
+		let imageData = ctx.getImageData(0, 0, w, h);
+		let data = imageData.data;
+		let perlin = new Perlin();
+		
+		for(let y=0, i=0; y<h; y++) {
+			for(let x=0; x<w; x++) {
+				//let f = noise2d(x, y, 0);
+				let f = perlin.sample([x, y])
+				let s = f * 255;
 				data[i++] = s;
 				data[i++] = s;
 				data[i++] = s;
