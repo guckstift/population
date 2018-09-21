@@ -57,7 +57,7 @@ export default class Sprite
 		let chunk = map.getChunk(cp);
 		let index = mm.linearLocalChunkCoord(lp);
 		
-		if(this.chunk) {
+		if(chunk) {
 			chunk.spriteList[index] = null;
 		}
 		

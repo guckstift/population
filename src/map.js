@@ -1,16 +1,58 @@
 import Buffer from "./gfxlib/buffer.js";
+import VertexArray from "./gfxlib/vertexarray.js";
 import Dyn2dArray from "./utils/dyn2darray.js";
 import image from "./gfxlib/image.js";
 import display from "./gfxlib/display.js";
 import Chunk from "./chunk.js";
 import Drawable from "./gfxlib/drawable.js";
-//import Batch from "./batch.js";
 import camera from "./camera.js";
 import generator from "./generator.js";
 import * as ma from "./utils/math.js";
 import * as mm from "./math.js";
+import shader from "./gfxlib/shader.js";
+import terraVertSrc from "./glsl/terra.vert.js";
+import terraFragSrc from "./glsl/terra.frag.js";
+import spriteVertSrc from "./glsl/sprite.vert.js";
+import spriteFragSrc from "./glsl/sprite.frag.js";
 
 let gl = display.gl;
+
+const coords = new Buffer(false, "static", "float", 2 * mm.verts);
+const indices = new Buffer(true, "static", "ushort", mm.indices);
+
+// generate map coords for a chunk
+for(let y=0; y < mm.vertRows; y++) {
+	for(let x=0; x < mm.vertsPerRow; x++) {
+		coords.set(mm.linearLocalCoord([x, y]) * 2, [x, y]);
+	}
+}
+
+// generate indices for a chunk
+for(let y=0, i=0; y < mm.triaRows; y++) {
+	let evenRow = y % 2 === 0;
+	let oddRow  = !evenRow;
+
+	for(let x=0; x < mm.triasPerRow; x++) {
+		let isDownPointing = evenRow && x % 2 == 0 || oddRow && x % 2 == 1;
+		let isUpPointing   = !isDownPointing;
+	
+		indices.set(i++, (y + isUpPointing) * mm.vertsPerRow + ma.floor(x / 2));
+	
+		if(x == 0 && y > 0) {
+			indices.set(i++, indices.data[i - 2]);
+		}
+	}
+
+	indices.set(i++, (y + 1 + oddRow) * mm.vertsPerRow - 1);
+	indices.set(i++, (y + 1 + evenRow) * mm.vertsPerRow - 1);
+
+	if(y < mm.triaRows - 1) {
+		indices.set(i++, indices.data[i - 2]);
+	}
+}
+
+coords.update();
+indices.update();
 
 class Map extends Drawable
 {
@@ -20,86 +62,163 @@ class Map extends Drawable
 		
 		this.chunks = new Dyn2dArray();
 		this.gen = generator;
-	}
-	
-	updateNormal(p)
-	{
-		let cp = mm.chunkCoord(p);
-		let lp = mm.localCoord(p);
-		let chunk = this.getChunk(cp);
+		this.terraShader = shader("terra", terraVertSrc, terraFragSrc);
+		this.spriteShader = shader("sprite", spriteVertSrc, spriteFragSrc);
+		this.terraShaderVars = this.terraShader.vars;
+		this.spriteShaderVars = this.spriteShader.vars;
 		
-		if(chunk) {
-			chunk.updateNormal(lp);
-		
-			if(lp[0] === 0) {
-				chunk = this.getChunk([cp[0] - 1, cp[1]]);
-			
-				if(chunk) {
-					chunk.updateNormal([mm.vertsPerRow - 1, lp[1]]);
-				}
-			}
-		
-			if(lp[1] === 0) {
-				chunk = this.getChunk([cp[0], cp[1] - 1]);
-			
-				if(chunk) {
-					chunk.updateNormal([lp[0], mm.vertRows - 1]);
-				}
-			}
-		
-			if(lp[0] === 0 && lp[1] === 0) {
-				chunk = this.getChunk([cp[0] - 1, cp[1] - 1]);
-			
-				if(chunk) {
-					chunk.updateNormal([mm.vertsPerRow - 1, mm.vertRows - 1]);
-				}
-			}
-		}
+		this.terraVao = new VertexArray(this.terraShader);
+		this.terraVao.indices(indices);
+		this.terraVao.assign(coords, "coord",  2);
 	}
 	
 	getHeight(p)
 	{
 		let cp = mm.chunkCoord(p);
 		let lp = mm.localCoord(p);
-		let i = mm.linearLocalCoord(lp);
 		let chunk = this.getChunk(cp);
 		
-		if(!chunk) {
-			if(lp[0] === 0) {
-				cp[0] --;
-				chunk = this.getChunk(cp);
-				lp[0] = mm.vertsPerRow - 1;
-				i = mm.linearLocalCoord(lp);
-			}
-			else if(lp[1] === 0) {
-				cp[1] --;
-				chunk = this.getChunk(cp);
-				lp[1] = mm.vertRows - 1;
-				i = mm.linearLocalCoord(lp);
-			}
-		}
+		return chunk ? chunk.getHeight(lp) : 0;
+	}
+	
+	getTerra(p)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
 		
-		return chunk ? chunk.heights.data[i] : 0;
+		return chunk ? chunk.getTerra(lp) : 0;
+	}
+	
+	getCoef(p)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
+		
+		return chunk ? chunk.getCoef(lp) : 0;
+	}
+	
+	getObj(p)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
+		
+		return chunk ? chunk.getObj(lp) : 0;
 	}
 	
 	getSprite(p)
 	{
 		let cp = mm.chunkCoord(p);
 		let lp = mm.localCoord(p);
-		let i = mm.linearLocalChunkCoord(lp);
 		let chunk = this.getChunk(cp);
 		
-		return chunk ? chunk.spriteList[i] : null;
+		return chunk ? chunk.getSprite(lp) : null;
+	}
+	
+	getChunk(cp)
+	{
+		return this.chunks.get(cp);
+	}
+	
+	setHeight(p, h)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
+		
+		if(!chunk) {
+			return false;
+		}
+		
+		chunk.setHeight(lp, h);
+		chunk.updateCoef(lp);
+		
+		this.updateCoef(mm.leftFrom(p));
+		this.updateCoef(mm.rightFrom(p));
+		this.updateCoef(mm.leftUpFrom(p));
+		this.updateCoef(mm.rightUpFrom(p));
+		this.updateCoef(mm.leftDownFrom(p));
+		this.updateCoef(mm.rightDownFrom(p));
+		
+		let sprite = this.getSprite(p);
+		
+		if(sprite) {
+			sprite._posOutdated = true;
+		}
+		
+		return true;
+	}
+	
+	setTerra(p, t)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
+		
+		if(!chunk) {
+			return false;
+		}
+		
+		chunk.setTerra(lp, t);
+		
+		return true;
+	}
+	
+	updateCoef(p)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
+		
+		if(!chunk) {
+			return false;
+		}
+		
+		chunk.updateCoef(lp);
+		
+		return true;
+	}
+	
+	setObj(p, o)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
+		
+		if(!chunk) {
+			return false;
+		}
+		
+		chunk.setObj(lp, o);
+		
+		return true;
+	}
+	
+	setSprite(p, s)
+	{
+		let cp = mm.chunkCoord(p);
+		let lp = mm.localCoord(p);
+		let chunk = this.getChunk(cp);
+		
+		if(!chunk) {
+			return false;
+		}
+		
+		chunk.setSprite(lp, s);
+		
+		return true;
+	}
+	
+	setChunk(cp, c)
+	{
+		this.chunks.set(cp, c);
 	}
 
 	getVertex(x, y, o = new Float32Array(3))
 	{
 		return mm.mapToWorld(x, y, this.getHeight([x, y]), o);
-	}
-	
-	getChunk(p)
-	{
-		return this.chunks.get(p);
 	}
 	
 	pickMapCoord(p)
@@ -144,87 +263,14 @@ class Map extends Drawable
 		return bestMapCoord;
 	}
 	
-	touchChunk(p)
+	touchChunk(cp)
 	{
-		if(!this.getChunk(p)) {
-			let chunk = new Chunk(p);
-			
-			this.chunks.set(p, chunk);
+		if(!this.getChunk(cp)) {
+			let chunk = new Chunk(cp);
+			this.setChunk(cp, chunk);
 			chunk.init();
-			chunk.updateNormals();
-			
-			chunk = this.getChunk([p[0] - 1, p[1]]);
-			if(chunk) chunk.updateNormalsRightEdge();
-			
-			chunk = this.getChunk([p[0], p[1] - 1]);
-			if(chunk) chunk.updateNormalsBottomEdge();
-			
-			chunk = this.getChunk([p[0] + 1, p[1]]);
-			if(chunk) chunk.updateNormalsLeftEdge();
-			
-			chunk = this.getChunk([p[0], p[1] + 1]);
-			if(chunk) chunk.updateNormalsTopEdge();
-			
-			chunk = this.getChunk([p[0] + 1, p[1] + 1]);
-			if(chunk) chunk.updateNormal([0, 0]);
+			chunk.updateCoefs();
 		}
-	}
-	
-	setHeight(p, h)
-	{
-		let cp = mm.chunkCoord(p);
-		let lp = mm.localCoord(p);
-		let i = mm.linearLocalCoord(lp);
-		let chunk = this.getChunk(cp);
-		
-		if(!chunk) {
-			return false;
-		}
-		
-		chunk.heights.set(i, h);
-		
-		if(lp[0] === 0) {
-			chunk = this.getChunk(mm.leftFrom(cp));
-			i = mm.linearLocalCoord([mm.vertsPerRow - 1, lp[1]]);
-		
-			if(chunk) {
-				chunk.heights.set(i, h);
-			}
-		}
-		
-		if(lp[1] === 0) {
-			chunk = this.getChunk(mm.upFrom(cp));
-			i = mm.linearLocalCoord([lp[0], mm.vertRows - 1]);
-		
-			if(chunk) {
-				chunk.heights.set(i, h);
-			}
-		}
-	
-		if(lp[0] === 0 && lp[1] === 0) {
-			chunk = this.getChunk(mm.leftUpFromCartes(cp));
-			i = mm.linearLocalCoord([mm.vertsPerRow - 1, mm.vertRows - 1]);
-		
-			if(chunk) {
-				chunk.heights.set(i, h);
-			}
-		}
-		
-		this.updateNormal(p);
-		this.updateNormal(mm.leftFrom(p));
-		this.updateNormal(mm.rightFrom(p));
-		this.updateNormal(mm.leftUpFrom(p));
-		this.updateNormal(mm.rightUpFrom(p));
-		this.updateNormal(mm.leftDownFrom(p));
-		this.updateNormal(mm.rightDownFrom(p));
-		
-		let sprite = this.getSprite(p);
-		
-		if(sprite) {
-			sprite._posOutdated = true;
-		}
-		
-		return true;
 	}
 	
 	liftOrSinkHeight(p, sink = false)
@@ -289,59 +335,13 @@ class Map extends Drawable
 		return true;
 	}
 	
-	setTerra(p, t)
-	{
-		let cp = mm.chunkCoord(p);
-		let lp = mm.localCoord(p);
-		let i = mm.linearLocalCoord(lp);
-		let chunk = this.getChunk(cp);
-		
-		if(chunk) {
-			chunk.terra.set(i, t);
-		
-			if(lp[0] === 0) {
-				chunk = this.getChunk([cp[0] - 1, cp[1]]);
-				i = mm.linearLocalCoord([mm.vertsPerRow - 1, lp[1]]);
-			
-				if(chunk) {
-					chunk.terra.set(i, t);
-				}
-			}
-		
-			if(lp[1] === 0) {
-				chunk = this.getChunk([cp[0], cp[1] - 1]);
-				i = mm.linearLocalCoord([lp[0], mm.vertRows - 1]);
-			
-				if(chunk) {
-					chunk.terra.set(i, t);
-				}
-			}
-		
-			if(lp[0] === 0 && lp[1] === 0) {
-				chunk = this.getChunk([cp[0] - 1, cp[1] - 1]);
-				i = mm.linearLocalCoord([mm.vertsPerRow - 1, mm.vertRows - 1]);
-			
-				if(chunk) {
-					chunk.terra.set(i, t);
-				}
-			}
-		}
-	}
-	
-	setSprite(p, s)
-	{
-		let cp = mm.chunkCoord(p);
-		let lp = mm.localCoord(p);
-		let i = mm.linearLocalChunkCoord(lp);
-		let chunk = this.getChunk(cp);
-		
-		if(chunk) {
-			chunk.sprites[i] = s;
-		}
-	}
-	
 	draw()
 	{
+		this.chunks.each(chunk => chunk.maptex.update());
+		
+		this.terraVao.bind();
+		this.terraShader.use();
+		
 		this.chunks.each(chunk => chunk.drawTerra());
 		
 		gl.enable(gl.DEPTH_TEST);

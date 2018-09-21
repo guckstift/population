@@ -27,9 +27,9 @@ export function createDataTex(gl, width, height)
 	let tex = createTex(gl);
 	
 	gl.bindTexture(gl.TEXTURE_2D, tex);
-	gl.texImage2D(gl.TEXTURE_2D, 0, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 	
-	return text;
+	return tex;
 }
 
 export function updateImgTex(gl, tex, img)

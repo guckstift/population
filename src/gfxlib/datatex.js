@@ -8,8 +8,8 @@ export default class DataTex
 		this.width = width;
 		this.height = height;
 		this.outdated = false;
-		this.tex = createTex(gl, width, height);
-		this.data = new Uint8ClampedArray(4 * width * height);
+		this.tex = createDataTex(gl, width, height);
+		this.data = new Uint8Array(4 * width * height);
 	}
 	
 	bind()
@@ -21,7 +21,7 @@ export default class DataTex
 	
 	set(p, offs, data)
 	{
-		let offset = 4 * (p[1] * this.width + this.height) + offs;
+		let offset = 4 * (p[1] * this.width + p[0]) + offs;
 		
 		if(typeof data.length === "number") {
 			this.data.set(data, offset);
@@ -35,6 +35,13 @@ export default class DataTex
 		this.outdated = true;
 	
 		return this;
+	}
+	
+	get(p, offs)
+	{
+		let offset = 4 * (p[1] * this.width + p[0]) + offs;
+		
+		return this.data[offset];
 	}
 	
 	update()

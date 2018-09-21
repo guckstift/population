@@ -24,6 +24,7 @@ class Gui
 				
 				this.logo = dom("img", {src: "gfx/logo.png"}),
 				this.fpsLabel = dom("div", {color: "#fff"}),
+				this.cursorLabel = dom("div", {color: "#fff"}, "Cursor:"),
 				this.btnRaise = dom("button", {type: "button", onclick: () => this.tool = "lift"},
 					"Lift"
 				),
@@ -104,6 +105,8 @@ class Gui
 			let worldPos = map.getVertex(...coord);
 			let screenPos = camera.worldToScreen(worldPos);
 			this.cursorPos = coord;
+			this.cursorLabel.innerText =
+				"Cursor: [" + this.cursorPos[0] + ", " + this.cursorPos[1] + "]";
 			dom(this.cursor, {left: screenPos[0] + "px", top: screenPos[1] + "px"});
 		});
 		

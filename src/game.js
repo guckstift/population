@@ -10,10 +10,12 @@ class Game
 		display.show(map);
 		
 		for(let y=0; y<4; y++) {
-			for(let x=0; x<4; x++) {
+			for(let x=0; x<8; x++) {
 				map.touchChunk([x, y]);
 			}
 		}
+		
+		this.map = map;
 	}
 }
 
