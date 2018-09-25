@@ -62,9 +62,11 @@ class Map extends Drawable
 		
 		this.chunks = new Dyn2dArray();
 		this.gen = generator;
+		
 		this.terraShader = shader("terra", terraVertSrc, terraFragSrc);
-		this.spriteShader = shader("sprite", spriteVertSrc, spriteFragSrc);
 		this.terraShaderVars = this.terraShader.vars;
+		
+		this.spriteShader = shader("sprite", spriteVertSrc, spriteFragSrc);
 		this.spriteShaderVars = this.spriteShader.vars;
 		
 		this.terraVao = new VertexArray(this.terraShader);
@@ -142,12 +144,6 @@ class Map extends Drawable
 		this.updateCoef(mm.leftDownFrom(p));
 		this.updateCoef(mm.rightDownFrom(p));
 		
-		let sprite = this.getSprite(p);
-		
-		if(sprite) {
-			sprite._posOutdated = true;
-		}
-		
 		return true;
 	}
 	
@@ -216,9 +212,9 @@ class Map extends Drawable
 		this.chunks.set(cp, c);
 	}
 
-	getVertex(x, y, o = new Float32Array(3))
+	getVertex(p, o = new Float32Array(3))
 	{
-		return mm.mapToWorld(x, y, this.getHeight([x, y]), o);
+		return mm.mapToWorld(p[0], p[1], this.getHeight(p), o);
 	}
 	
 	pickMapCoord(p)
@@ -246,7 +242,7 @@ class Map extends Drawable
 			let xshift = 1 * oddstart * !oddrow * !before - 1 * !oddstart * oddrow * before;
 			// sample map coord
 			let mapCoord = [fx + xshift, fy + i];
-			let worldPos = this.getVertex(...mapCoord);
+			let worldPos = this.getVertex(mapCoord);
 			// sample screen point
 			let screenPos = camera.worldToScreen(worldPos);
 			// the squared distance from that sample to the input point

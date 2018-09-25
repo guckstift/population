@@ -27,15 +27,15 @@ export const triaRows    = chunkSize * 2;
 export const indices     = (triasPerRow + 2 + 2) * triaRows - 2;
 
 export const texDivision = [4, 4];
-export const blockSize   = 12;
+export const blockSize   = 4;
 export const blockStride = blockSize * 4;
 
 //export const coefLower = 0.4399413466453552;
 //export const coefUpper = 0.8944271802902222;
 //export const coefLower = 0.4375; //  7/16
 //export const coefUpper = 0.9375; // 15/16
-export const coefLower = 0;
-export const coefUpper = 1;
+//export const coefLower = 0;
+//export const coefUpper = 1;
 
 export function posInBounds(pos)
 {

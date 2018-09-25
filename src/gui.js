@@ -10,7 +10,7 @@ class Gui
 {
 	constructor()
 	{
-		this.tool = null;
+		this.tool = "tree";
 		this.cursorPos = [0, 0];
 		
 		window.addEventListener("contextmenu", function(e) { e.preventDefault(); });
@@ -36,6 +36,9 @@ class Gui
 				),
 				this.btnErase = dom("button", {type: "button", onclick: () => this.tool = "erase"},
 					"Erase"
+				),
+				this.btnBeach = dom("button", {type: "button", onclick: () => this.tool = "beach"},
+					"Beach"
 				),
 			),
 			
@@ -78,8 +81,13 @@ class Gui
 				map.liftOrSinkHeight(this.cursorPos, true);
 			}
 			else if(this.tool === "tree") {
-				let sprite = new Sprite(image("gfx/tree.png"), this.cursorPos);
-				sprite.anchor = [0.5, 0.875];
+				let sprite = new Sprite(image("gfx/tree.png", [0.5, 0.875]), this.cursorPos);
+			}
+			else if(this.tool === "erase") {
+				map.setSprite(this.cursorPos, null);
+			}
+			else if(this.tool === "beach") {
+				map.setTerra(this.cursorPos, 2);
 			}
 		
 			e.preventDefault();
@@ -102,7 +110,7 @@ class Gui
 				camera.pos[1] += this.mouse.rel[1] / camera.totalZoom;
 			}
 			let coord = map.pickMapCoord(this.mouse.pos);
-			let worldPos = map.getVertex(...coord);
+			let worldPos = map.getVertex(coord);
 			let screenPos = camera.worldToScreen(worldPos);
 			this.cursorPos = coord;
 			this.cursorLabel.innerText =

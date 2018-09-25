@@ -1,6 +1,10 @@
 import gui from "./gui.js";
 import display from "./gfxlib/display.js";
+import image from "./gfxlib/image.js";
 import map from "./map.js";
+import camera from "./camera.js";
+
+window.image = image;
 
 class Game
 {
@@ -16,6 +20,7 @@ class Game
 		}
 		
 		this.map = map;
+		this.camera = camera;
 	}
 }
 

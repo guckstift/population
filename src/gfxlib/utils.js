@@ -1,3 +1,16 @@
+export function nextPowerOfTwo(v)
+{
+	v--;
+	v |= v >> 1;
+	v |= v >> 2;
+	v |= v >> 4;
+	v |= v >> 8;
+	v |= v >> 16;
+	v++;
+	
+	return v;
+}
+
 export function createGl(options)
 {
 	return document.createElement("canvas").getContext("webgl", options);
@@ -22,12 +35,18 @@ export function updateDataTex(gl, tex, w, h, data)
 	gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, data);
 }
 
-export function createDataTex(gl, width, height)
+export function resizeDataTex(gl, tex, w, h, data)
+{
+	gl.bindTexture(gl.TEXTURE_2D, tex);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+}
+
+export function createDataTex(gl, w, h)
 {
 	let tex = createTex(gl);
 	
 	gl.bindTexture(gl.TEXTURE_2D, tex);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 	
 	return tex;
 }

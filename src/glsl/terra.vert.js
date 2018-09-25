@@ -5,13 +5,13 @@ export default `
 	uniform sampler2D maptexLeft;
 	uniform sampler2D maptexDown;
 	uniform sampler2D maptexLeftDown;
-	uniform float triaHeight;
 	uniform float heightScale;
-	uniform float coefLower;
-	uniform float coefUpper;
+	uniform float totalZoom;
+	uniform float viewAngleSin;
 	uniform vec2 chunkSize;
 	uniform vec2 chunkCoord;
-	uniform mat4 camera;
+	uniform vec2 camPos;
+	uniform vec2 screenSize;
 
 	attribute vec2 coord;
 
@@ -39,20 +39,19 @@ export default `
 		
 		float height = vertex.r * 255.0;
 		float terra = vertex.g * 255.0;
-		float coef = vertex.b * (coefUpper - coefLower) + coefLower;
-		
+		float coef = vertex.b;
 		float fractY = fract(coord.y);
 		vec2 globalCoord = coord + chunkCoord * chunkSize;
-		vec4 worldPos = vec4(globalCoord.x, globalCoord.y * triaHeight, height * heightScale, 1.0);
+		vec2 flatPos = globalCoord / vec2(1, 2) - vec2(0, viewAngleSin * height * heightScale);
 	
 		if(mod(floor(coord.y), 2.0) == 0.0) {
-			worldPos.x += 0.5 * fractY;
+			flatPos.x += 0.5 * fractY;
 		}
 		else {
-			worldPos.x += 0.5 - 0.5 * fractY;
+			flatPos.x += 0.5 - 0.5 * fractY;
 		}
-	
-		gl_Position = worldPos * camera;
+		
+		gl_Position = vec4((flatPos - camPos) * totalZoom * vec2(2, -2) / screenSize, 0.0, 1.0);
 	
 		for(int i = 0; i < 16; i++) {
 			vUseTerra[i] = float(terra == float(i));

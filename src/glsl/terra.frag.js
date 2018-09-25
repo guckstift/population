@@ -2,7 +2,6 @@ export default `
 	precision highp float;
 
 	uniform sampler2D tex;
-	uniform float triaHeight;
 	uniform vec2 texDivision;
 
 	varying float vUseTerra[16];
@@ -25,8 +24,7 @@ export default `
 			texCoord.x += 2.0;
 		}
 	
-		texCoord = mod(texCoord, texDivision);
-		texCoord *= 2.0 / 32.00;
+		texCoord = mod(texCoord, texDivision) * 2.0 / 32.00;
 	
 		for(int i = 0; i < 16; i++) {
 			vec2 tileCoord = vec2(mod(float(i), texDivision.x), floor(float(i) / texDivision.x));

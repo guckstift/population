@@ -5,7 +5,7 @@ import packer from "./packer.js";
 let defTex = createEmptyTex(gl, 1, 1);
 let cache = {};
 
-export default function image(url = "", owntex = false)
+export default function image(url = "", anchor = [0,0], owntex = false)
 {
 	let id = url + ";" + owntex;
 	
@@ -13,20 +13,25 @@ export default function image(url = "", owntex = false)
 		return cache[id];
 	}
 	
-	return cache[id] = new Image(url, owntex);
+	return cache[id] = new Image(url, anchor, owntex);
 }
 
 class Image
 {
-	constructor(url, owntex)
+	constructor(url, anchor, owntex)
 	{
 		this.url = url;
+		this.anchor = anchor;
+		this.boxAnchor = new Float32Array(this.anchor);
 		this.owntex = owntex;
 		this.bbox = {x:0, y:0, w:0, h:0};
 		this.bboxArea = 0;
-		this.frame = {pos: {x:0, y:0}, texbox: new Float32Array(4), tex: defTex};
 		this.tmpTexId = -1;
 		this.defAnchor = [0, 0];
+		
+		this.frame = {
+			id: 0, pos: {x:0, y:0}, texbox: new Float32Array(4), tex: defTex, texid: 0
+		};
 		
 		if(url) {
 			this.ready = loadImage(url).then(img => this.onLoad(img));
@@ -64,6 +69,8 @@ class Image
 		}
 		else {
 			this.bbox = getImageBox(img);
+			this.boxAnchor[0] = (this.anchor[0] * this.img.width  - this.bbox.x) / this.bbox.w;
+			this.boxAnchor[1] = (this.anchor[1] * this.img.height - this.bbox.y) / this.bbox.h;
 			this.frame = packer.pack(this);
 		}
 		

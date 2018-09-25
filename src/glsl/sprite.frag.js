@@ -7,7 +7,6 @@ export default `
 	
 	varying vec2 texCoord;
 	varying float vTexId;
-	varying float vOpacity;
 	
 	void main()
 	{
@@ -28,7 +27,5 @@ export default `
 		else {
 			gl_FragDepthEXT = gl_FragCoord.z * gl_FragColor.a;
 		}
-		
-		gl_FragColor.a *= vOpacity;
 	}
 `;

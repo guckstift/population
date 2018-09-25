@@ -7,10 +7,7 @@ todo
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
 * implement animated sprites
-* movable sprites
 * move dev screenshots to separate page
-* optimize obj sprite batching
-* basic level editing (inc/dec height, set terra, add tree, remove tree)
 * blender second tree type
 * debug picking
 * zoom to mouse
@@ -45,3 +42,6 @@ done
 * bmp-font renderer
 * find a name for the game
 * port pack-textures to js
+* optimize obj sprite batching
+* movable sprites
+* basic level editing (inc/dec height, set terra, add tree, remove tree)
