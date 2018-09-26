@@ -5,6 +5,9 @@ export default `
 	uniform sampler2D maptexLeft;
 	uniform sampler2D maptexDown;
 	uniform sampler2D maptexLeftDown;
+	uniform bool chunkHasLeft;
+	uniform bool chunkHasDown;
+	uniform bool chunkHasLeftDown;
 	uniform float heightScale;
 	uniform float totalZoom;
 	uniform float viewAngleSin;
@@ -18,6 +21,7 @@ export default `
 	varying float vUseTerra[16];
 	varying float vCoef;
 	varying vec2 vCoord;
+	varying float alpha;
 
 	void main()
 	{
@@ -26,15 +30,19 @@ export default `
 		
 		if(texCoord.x >= 1.0 && texCoord.y >= 1.0) {
 			vertex = texture2D(maptexLeftDown, texCoord - vec2(1.0));
+			alpha = float(chunkHasLeftDown);
 		}
 		else if(texCoord.x >= 1.0) {
 			vertex = texture2D(maptexLeft, texCoord - vec2(1.0, 0.0));
+			alpha = float(chunkHasLeft);
 		}
 		else if(texCoord.y >= 1.0) {
 			vertex = texture2D(maptexDown, texCoord - vec2(0.0, 1.0));
+			alpha = float(chunkHasDown);
 		}
 		else {
 			vertex = texture2D(maptex, texCoord);
+			alpha = 1.0;
 		}
 		
 		float height = vertex.r * 255.0;

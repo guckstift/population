@@ -7,6 +7,7 @@ export default `
 	varying float vUseTerra[16];
 	varying float vCoef;
 	varying vec2 vCoord;
+	varying float alpha;
 
 	void main()
 	{
@@ -32,5 +33,6 @@ export default `
 		}
 	
 		gl_FragColor.rgb *= vCoef;
+		gl_FragColor.a *= alpha;
 	}
 `;

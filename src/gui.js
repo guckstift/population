@@ -81,7 +81,7 @@ class Gui
 				map.liftOrSinkHeight(this.cursorPos, true);
 			}
 			else if(this.tool === "tree") {
-				let sprite = new Sprite(image("gfx/tree.png", [0.5, 0.875]), this.cursorPos);
+				let sprite = new Sprite(image("gfx/tree2.png", [0.5, 0.875]), this.cursorPos);
 			}
 			else if(this.tool === "erase") {
 				map.setSprite(this.cursorPos, null);

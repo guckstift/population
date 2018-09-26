@@ -219,12 +219,13 @@ class Map extends Drawable
 	
 	pickMapCoord(p)
 	{
+		let totalZoom = camera.totalZoom;
 		// the map ground coord y at p
-		let y = ((p[1] - display.height / 2) / camera.totalZoom + camera.pos[1]) * 2;
+		let y = ((p[1] - display.height / 2) / totalZoom + camera.pos[1]) * 2;
 		// the nearest map ground coord row above p
 		let fy = ma.floor(y);
 		// the map ground coord x in the chosen row
-		let x = ((p[0] - display.width / 2) / camera.totalZoom + camera.pos[0]) - ma.mod(fy, 2) / 2;
+		let x = ((p[0] - display.width / 2) / totalZoom + camera.pos[0]) - ma.mod(fy, 2) / 2;
 		// the nearest map ground coord column in the chosen row, where p lies between
 		let fx = ma.round(x);
 		// lies p before or after the chosen column
@@ -252,7 +253,7 @@ class Map extends Drawable
 				break;
 			}
 		
-			bestDist = dist;
+			bestDist     = dist;
 			bestMapCoord = mapCoord;
 		}
 	

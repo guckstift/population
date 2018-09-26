@@ -150,13 +150,15 @@ export default class Chunk
 			}
 		}
 		
-		let treeImg = image("gfx/tree.png", [0.5, 0.875]);
+		let treeImg1 = image("gfx/tree1.png", [0.5, 0.875]);
+		let treeImg2 = image("gfx/tree2.png", [0.5, 0.875]);
 		
 		for(var y=0; y < mm.chunkHeight; y++) {
 			for(var x=0; x < mm.chunkWidth; x++) {
-				if(Math.random() < 0.03125) {
+				//if(Math.random() < 0.03125) {
+				if(Math.random() < 0.0625) {
 					let gp = mm.globalCoord(this.pos, [x, y]);
-					let sprite = new Sprite(treeImg, gp);
+					let sprite = new Sprite(Math.random() < 0.5 ? treeImg1 : treeImg2, gp);
 				}
 			}
 		}
@@ -173,25 +175,31 @@ export default class Chunk
 		gl.activeTexture(gl.TEXTURE1);
 		if(chunk = map.getChunk([this.pos[0] + 1, this.pos[1]])) {
 			gl.bindTexture(gl.TEXTURE_2D, chunk.maptex.tex);
+			gl.uniform1i(vars.chunkHasLeft, 1);
 		}
 		else {
 			gl.bindTexture(gl.TEXTURE_2D, defImage.frame.tex);
+			gl.uniform1i(vars.chunkHasLeft, 0);
 		}
 		
 		gl.activeTexture(gl.TEXTURE2);
 		if(chunk = map.getChunk([this.pos[0], this.pos[1] + 1])) {
 			gl.bindTexture(gl.TEXTURE_2D, chunk.maptex.tex);
+			gl.uniform1i(vars.chunkHasDown, 1);
 		}
 		else {
 			gl.bindTexture(gl.TEXTURE_2D, defImage.frame.tex);
+			gl.uniform1i(vars.chunkHasDown, 0);
 		}
 		
 		gl.activeTexture(gl.TEXTURE3);
 		if(chunk = map.getChunk([this.pos[0] + 1, this.pos[1] + 1])) {
 			gl.bindTexture(gl.TEXTURE_2D, chunk.maptex.tex);
+			gl.uniform1i(vars.chunkHasLeftDown, 1);
 		}
 		else {
 			gl.bindTexture(gl.TEXTURE_2D, defImage.frame.tex);
+			gl.uniform1i(vars.chunkHasLeftDown, 0);
 		}
 		
 		gl.activeTexture(gl.TEXTURE4);
@@ -245,7 +253,7 @@ export default class Chunk
 		gl.uniform2fv(vars.framedataSize, packer.datatexdims);
 		gl.uniform2fv(vars.camPos, camera.pos);
 		gl.uniform2fv(vars.screenSize, display.size);
-		gl.uniform1f(vars.scale, camera.zoom);
+		gl.uniform1f(vars.scale, camera.zoom / 2);
 		gl.uniform1f(vars.zoom, camera.totalZoom);
 		glia.drawArraysInstancedANGLE(gl.TRIANGLE_STRIP, 0, 4, mm.chunkVerts);
 	}
