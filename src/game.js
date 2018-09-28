@@ -1,6 +1,7 @@
 import gui from "./gui.js";
 import display from "./gfxlib/display.js";
 import image from "./gfxlib/image.js";
+import {imagesLoaded} from "./gfxlib/image.js";
 import map from "./map.js";
 import camera from "./camera.js";
 
@@ -21,6 +22,8 @@ class Game
 		
 		this.map = map;
 		this.camera = camera;
+		
+		imagesLoaded().then(() => console.log("all loaded"));
 	}
 }
 

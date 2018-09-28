@@ -5,6 +5,16 @@ import Mouse from "./utils/mouse.js";
 import Sprite from "./sprite.js";
 import camera from "./camera.js";
 import map from "./map.js";
+import Animation from "./animation.js";
+
+let ani = [];
+let k = 0;
+
+for(let i=1; i<31; i++) {
+	ani.push(image("gfx/tree2/" + String(i).padStart(4, "0000") + ".png", [0.5, 0.875]));
+}
+
+ani = new Animation(ani);
 
 class Gui
 {
@@ -82,6 +92,7 @@ class Gui
 			}
 			else if(this.tool === "tree") {
 				let sprite = new Sprite(image("gfx/tree2.png", [0.5, 0.875]), this.cursorPos);
+				sprite.ani = ani;
 			}
 			else if(this.tool === "erase") {
 				map.setSprite(this.cursorPos, null);

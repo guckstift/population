@@ -1,3 +1,4 @@
+import display from "./gfxlib/display.js";
 import PointProxy from "./gfxlib/pointproxy.js";
 import {defImage} from "./gfxlib/image.js";
 import map from "./map.js";
@@ -22,6 +23,10 @@ export default class Sprite
 		this._pos       = new Float32Array(2);
 		this._posProxy  = new PointProxy(this._pos, () => this.changePos());
 		this._img       = defImage;
+		this._ani       = null;
+		this._frame     = 0;
+		this._lastFrame = 0;
+		this._frameDura = 0;
 		this._from      = 0;
 		this._way       = 0;
 		
@@ -70,9 +75,18 @@ export default class Sprite
 	
 	set img(img)
 	{
-		img.ready.then(() => {
-			this._img = img;
-		});
+		this._img = img;
+	}
+	
+	get ani()
+	{
+		return this._ani;
+	}
+	
+	set ani(ani)
+	{
+		this._ani   = ani;
+		this._frame = ma.random() * ani.count;
 	}
 	
 	get from()
@@ -99,6 +113,15 @@ export default class Sprite
 	
 	update(texId, frameId)
 	{
+		if(this._ani) {
+			if(this._frame !== this._lastFrame) {
+				this.img = this._ani.imgs[ma.floor(this._frame)];
+			}
+			
+			this._lastFrame = this._frame;
+			this._frame     = (this._frame + display.delta / this._ani.dura) % this._ani.count;
+		}
+		
 		if(this._installed) {
 			let img  = this._img;
 			let bbox = img.bbox;

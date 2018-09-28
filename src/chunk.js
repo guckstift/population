@@ -10,6 +10,7 @@ import Sprite from "./sprite.js";
 import image from "./gfxlib/image.js";
 import {defImage} from "./gfxlib/image.js";
 import packer from "./gfxlib/packer.js";
+import Animation from "./animation.js";
 
 const gl = display.gl;
 const glia = display.glia;
@@ -17,6 +18,15 @@ const glvao = display.glvao;
 
 const verts = new Buffer(false, "static", "ubyte", 8).set(0, [0,0, 1,0, 0,1, 1,1]).update();
 const terraImg = image("gfx/terra.png", [0, 0], true);
+
+let ani = [];
+let k = 0;
+
+for(let i=1; i<31; i++) {
+	ani.push(image("gfx/tree2/" + String(i).padStart(4, "0000") + ".png", [0.5, 0.875]));
+}
+
+ani = new Animation(ani);
 
 export default class Chunk
 {
@@ -155,13 +165,18 @@ export default class Chunk
 		
 		for(var y=0; y < mm.chunkHeight; y++) {
 			for(var x=0; x < mm.chunkWidth; x++) {
-				//if(Math.random() < 0.03125) {
-				if(Math.random() < 0.0625) {
+				if(Math.random() < 0.03125) {
+				//if(Math.random() < 0.0625) {
+				//if(Math.random() < 1) {
 					let gp = mm.globalCoord(this.pos, [x, y]);
 					let sprite = new Sprite(Math.random() < 0.5 ? treeImg1 : treeImg2, gp);
+					sprite.ani = ani;
+					//k++;
 				}
 			}
 		}
+		
+		//console.log(k);
 	}
 	
 	drawTerra()

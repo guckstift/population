@@ -4,6 +4,7 @@ import packer from "./packer.js";
 
 let defTex = createEmptyTex(gl, 1, 1);
 let cache = {};
+let numLoadingImages = 0;
 
 export default function image(url = "", anchor = [0,0], owntex = false)
 {
@@ -14,6 +15,11 @@ export default function image(url = "", anchor = [0,0], owntex = false)
 	}
 	
 	return cache[id] = new Image(url, anchor, owntex);
+}
+
+export function imagesLoaded()
+{
+	return Promise.all(Object.values(cache).map(img => img.ready));
 }
 
 class Image
@@ -34,6 +40,7 @@ class Image
 		};
 		
 		if(url) {
+			numLoadingImages ++;
 			this.ready = loadImage(url).then(img => this.onLoad(img));
 		}
 		else {
@@ -75,6 +82,8 @@ class Image
 		}
 		
 		this.bboxArea = this.bbox.w * this.bbox.h;
+		numLoadingImages --;
+		console.log(numLoadingImages);
 	}
 }
 
