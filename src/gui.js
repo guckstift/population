@@ -8,7 +8,6 @@ import map from "./map.js";
 import Animation from "./animation.js";
 
 let ani = [];
-let k = 0;
 
 for(let i=1; i<31; i++) {
 	ani.push(image("gfx/tree2/" + String(i).padStart(4, "0000") + ".png", [0.5, 0.875]));

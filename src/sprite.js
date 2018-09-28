@@ -14,10 +14,21 @@ const fromFuncs = [
 	mm.leftDownFrom,
 ];
 
+const toFuncs = [
+	mm.rightFrom,
+	mm.rightDownFrom,
+	mm.leftDownFrom,
+	mm.leftFrom,
+	mm.leftUpFrom,
+	mm.rightUpFrom,
+];
+
 export default class Sprite
 {
 	constructor(img, pos)
 	{
+		this.speed      = 1;
+		this.path       = [];
 		this._installed = false;
 		this._oldPos    = new Float32Array(2);
 		this._pos       = new Float32Array(2);
@@ -142,6 +153,20 @@ export default class Sprite
 				this._flatPos[1]  = flatPos[1];
 				this._posOutdated = false;
 			}
+		}
+		
+		if(this._way === 0 && this.path.length > 0) {
+			let to = this.path.shift();
+			
+			this.pos  = toFuncs[to](this._pos);
+			this.from = to;
+			this.way  = 1;
+		}
+		
+		if(this.speed > 0 && this._way > 0) {
+			let way = this._way - this.speed * display.delta / 1000;
+			
+			this.way = way < 0 ? 0 : way;
 		}
 	}
 }

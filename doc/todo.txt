@@ -6,7 +6,6 @@ todo
 * blender villager
 * make real gradient perlin noise instead of value noise
 * try perlin noise with one single seeded source
-* implement animated sprites
 * move dev screenshots to separate page
 * blender second tree type
 * debug picking
@@ -45,3 +44,4 @@ done
 * optimize obj sprite batching
 * movable sprites
 * basic level editing (inc/dec height, set terra, add tree, remove tree)
+* implement animated sprites

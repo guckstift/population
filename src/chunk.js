@@ -20,7 +20,6 @@ const verts = new Buffer(false, "static", "ubyte", 8).set(0, [0,0, 1,0, 0,1, 1,1
 const terraImg = image("gfx/terra.png", [0, 0], true);
 
 let ani = [];
-let k = 0;
 
 for(let i=1; i<31; i++) {
 	ani.push(image("gfx/tree2/" + String(i).padStart(4, "0000") + ".png", [0.5, 0.875]));
@@ -171,12 +170,9 @@ export default class Chunk
 					let gp = mm.globalCoord(this.pos, [x, y]);
 					let sprite = new Sprite(Math.random() < 0.5 ? treeImg1 : treeImg2, gp);
 					sprite.ani = ani;
-					//k++;
 				}
 			}
 		}
-		
-		//console.log(k);
 	}
 	
 	drawTerra()
